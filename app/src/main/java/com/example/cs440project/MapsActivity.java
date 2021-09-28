@@ -66,12 +66,9 @@ public class MapsActivity extends FragmentActivity
             mMap.addMarker(new MarkerOptions().position(UIC).title("University of Illinois at Chicago"));
             mMap.setLatLngBoundsForCameraTarget(UICBounds);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(UIC));
-//            mMap.animateCamera(CameraUpdateFactory.zoomIn());
             mMap.setMinZoomPreference(16.0f);
             mMap.setMaxZoomPreference(17.0f);
         });
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(UIC));
-//        mMap.moveCamera(CameraUpdateFactory.zoomTo(5.0f));
         enableMyLocation();
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
