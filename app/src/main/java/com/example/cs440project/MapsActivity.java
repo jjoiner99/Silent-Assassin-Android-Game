@@ -62,6 +62,7 @@ public class MapsActivity extends FragmentActivity
                 new LatLng(41.869573, -87.651078),
                 new LatLng(41.874249, -87.647262)
         );
+        // When map finished loading, prevents the error
         mMap.setOnMapLoadedCallback(() -> {
             mMap.addMarker(new MarkerOptions().position(UIC).title("University of Illinois at Chicago"));
             mMap.setLatLngBoundsForCameraTarget(UICBounds);
