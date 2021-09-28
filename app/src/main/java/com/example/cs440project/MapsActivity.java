@@ -27,18 +27,18 @@ public class MapsActivity extends FragmentActivity
         GoogleMap.OnMyLocationClickListener {
 
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
+        com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
     }
@@ -54,7 +54,7 @@ public class MapsActivity extends FragmentActivity
      */
     @SuppressLint("MissingPermission")
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
 
         mMap = googleMap;
         LatLng UIC = new LatLng(41.871899, -87.649252);
@@ -70,35 +70,32 @@ public class MapsActivity extends FragmentActivity
             mMap.setMinZoomPreference(16.0f);
             mMap.setMaxZoomPreference(17.0f);
         });
-        enableMyLocation();
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
     }
 
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == 1) {
+//            enableMyLocation();
+//        } else {
+//            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            enableMyLocation();
-        } else {
-            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void enableMyLocation() {
-        int LOCATION_REQUEST = 1;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        == PackageManager.PERMISSION_GRANTED) {
-            if (mMap != null) {
-                mMap.setMyLocationEnabled(true);
-            }
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
-        }
-    }
+//    private void enableMyLocation() {
+//        int LOCATION_REQUEST = 1;
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//        == PackageManager.PERMISSION_GRANTED) {
+//            if (mMap != null) {
+//                mMap.setMyLocationEnabled(true);
+//            }
+//        } else {
+//            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
+//        }
+//    }
 
     @Override
     public boolean onMyLocationButtonClick() {

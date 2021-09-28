@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="20dp"
+    android:background="#009688"
     tools:context=".MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Silent Assassin"
-        android:textSize="32dp"
         android:textColor="@color/black"
+        android:textSize="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -22,10 +23,9 @@
         android:id="@+id/main_start_btn"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:text="Start"
         android:backgroundTint="#A9A9A9"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:onClick="handleStartBtn"
-        />
+        android:text="Start"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
