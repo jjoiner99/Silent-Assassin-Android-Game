@@ -9,8 +9,18 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
@@ -21,6 +31,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Objects.requireNonNull(getSupportActionBar()).hide(); // hide the title bar
         setContentView(R.layout.activity_main);
+
+        Log.i("Database", "retrieving database");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                Log.d("DB reading", "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("DB reading", "Failed to read value.", error.toException());
+            }
+        });
+        Log.i("Database", "Should be done");
     }
 
     public void handleStartBtn(View view) {

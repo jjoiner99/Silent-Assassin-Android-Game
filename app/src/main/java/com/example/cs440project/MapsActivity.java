@@ -1,17 +1,14 @@
 package com.example.cs440project;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+
+import com.example.cs440project.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,7 +16,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.cs440project.databinding.ActivityMapsBinding;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -27,6 +27,7 @@ public class MapsActivity extends FragmentActivity
         GoogleMap.OnMyLocationClickListener {
 
     private GoogleMap mMap;
+    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +41,10 @@ public class MapsActivity extends FragmentActivity
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("Locations");
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -62,6 +55,9 @@ public class MapsActivity extends FragmentActivity
                 new LatLng(41.869573, -87.651078),
                 new LatLng(41.874249, -87.647262)
         );
+        HashMap<String, LatLng> places = new HashMap<String, LatLng>();
+        places.put("UIC", UIC);
+        myRef.setValue(places);
         // When map finished loading, prevents the error
         mMap.setOnMapLoadedCallback(() -> {
             mMap.addMarker(new MarkerOptions().position(UIC).title("University of Illinois at Chicago"));
@@ -74,28 +70,6 @@ public class MapsActivity extends FragmentActivity
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == 1) {
-//            enableMyLocation();
-//        } else {
-//            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-//    private void enableMyLocation() {
-//        int LOCATION_REQUEST = 1;
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//        == PackageManager.PERMISSION_GRANTED) {
-//            if (mMap != null) {
-//                mMap.setMyLocationEnabled(true);
-//            }
-//        } else {
-//            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
-//        }
-//    }
 
     @Override
     public boolean onMyLocationButtonClick() {
