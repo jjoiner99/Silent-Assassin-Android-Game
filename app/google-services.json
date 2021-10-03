@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "368351413696",
+    "project_id": "silentassassin-9bb9c",
+    "storage_bucket": "silentassassin-9bb9c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368351413696:android:8ea864ffd5247c912db425",
+        "android_client_info": {
+          "package_name": "com.example.cs440project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "368351413696-1sg2rp3mtp8tf79t7qo2o109dej0ckmr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKNfTNavKSRxfWg2UmoU_Jyijdnk7a53o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "368351413696-1sg2rp3mtp8tf79t7qo2o109dej0ckmr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
