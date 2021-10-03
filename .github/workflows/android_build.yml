@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: Android CI
 
 on:
@@ -6,12 +7,22 @@ on:
   pull_request:
     branches: [ main ]
 
+=======
+# Name of action
+name: Android Build
+
+# When the workflow is run? - on a PR
+on: pull_request
+
+#Tasks to be run on each PR
+>>>>>>> af9b4eed685a3173cc1ec1c73669ec30e32feffd
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v2
       - name: set up JDK 11
         uses: actions/setup-java@v2
@@ -24,3 +35,18 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
+=======
+      - uses: actions/checkout@v1
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Run Tests
+        run: ./gradlew test
+
+      # Assemble our project
+      - name: Build Project
+        run: ./gradlew assemble
+>>>>>>> af9b4eed685a3173cc1ec1c73669ec30e32feffd
