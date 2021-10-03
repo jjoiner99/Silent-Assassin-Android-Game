@@ -16,10 +16,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -27,7 +23,6 @@ public class MapsActivity extends FragmentActivity
         GoogleMap.OnMyLocationClickListener {
 
     private GoogleMap mMap;
-    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +69,6 @@ public class MapsActivity extends FragmentActivity
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "Current location: ", Toast.LENGTH_SHORT).show();
         return false;
-    }
-
-    // TODO Get coordinatees of user and update the database.
-    public void getLocation() {
-
-    }
-
-    //TODO Implement check to see if person is in an area of interest.
-    public boolean isInPOI() {
-      return false;
     }
 
     @Override
