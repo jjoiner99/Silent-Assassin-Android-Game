@@ -41,8 +41,8 @@ public class MapsActivity extends FragmentActivity
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("Locations");
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        myRef = database.getReference("Locations");
     }
 
     @SuppressLint("MissingPermission")
@@ -55,9 +55,8 @@ public class MapsActivity extends FragmentActivity
                 new LatLng(41.869573, -87.651078),
                 new LatLng(41.874249, -87.647262)
         );
-        HashMap<String, LatLng> places = new HashMap<String, LatLng>();
-        places.put("UIC", UIC);
-        myRef.setValue(places);
+//        places.put("UIC", UIC);
+//        myRef.setValue(places);
         // When map finished loading, prevents the error
         mMap.setOnMapLoadedCallback(() -> {
             mMap.addMarker(new MarkerOptions().position(UIC).title("University of Illinois at Chicago"));
@@ -75,6 +74,16 @@ public class MapsActivity extends FragmentActivity
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "Current location: ", Toast.LENGTH_SHORT).show();
         return false;
+    }
+
+    // TODO Get coordinatees of user and update the database.
+    public void getLocation() {
+
+    }
+
+    //TODO Implement check to see if person is in an area of interest.
+    public boolean isInPOI() {
+      return false;
     }
 
     @Override
