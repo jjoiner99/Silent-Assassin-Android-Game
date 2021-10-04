@@ -10,8 +10,6 @@ import com.google.android.gms.maps.model.PolygonOptions;
 // Find coordinates using https://www.latlong.net/
 // Map styled with https://mapstyle.withgoogle.com/
 public class InterestPoints {
-    private static float[] hsv = new float[3];
-
     // Colors of Buildings
     private static int polygonFillColor = Color.parseColor("#1DA1F2");
     private static int polygonStrokeColor = Color.parseColor("#1DA1F2");
@@ -133,4 +131,17 @@ public class InterestPoints {
                 .strokeColor(polygonStrokeColor)
         );
     }
+
+    public static void drawUicBounds(GoogleMap mMap) {
+        Polygon uicBounds = mMap.addPolygon(new PolygonOptions()
+                .add(new LatLng(41.874153, -87.653365))
+                .add(new LatLng(41.874265, -87.647310))
+                .add(new LatLng(41.869775, -87.647160))
+                .add(new LatLng(41.869775, -87.651025))
+                .add(new LatLng(41.873099, -87.651089))
+                .add(new LatLng(41.873099, -87.653387))
+                .strokeColor(polygonStrokeColor)
+        );
+    }
+
 }

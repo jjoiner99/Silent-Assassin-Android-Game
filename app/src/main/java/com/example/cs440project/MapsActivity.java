@@ -60,6 +60,7 @@ public class MapsActivity extends FragmentActivity
             Log.e("Map", "Can't find style.", e);
         }
         InterestPoints.drawBuildingPolygons(mMap); // Draws all of the buildings
+        InterestPoints.drawUicBounds(mMap);
 //        MapPreference.setMapStyle(mMap);
 
         // When map finished loading, prevents the error
