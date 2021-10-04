@@ -10,7 +10,6 @@ import com.google.android.gms.maps.model.PolygonOptions;
 // Find coordinates using https://www.latlong.net/
 // Map styled with https://mapstyle.withgoogle.com/
 public class InterestPoints {
-    private static float[] hsv = new float[3];
 
     // Colors of Buildings
     private static int polygonFillColor = Color.parseColor("#1DA1F2");
@@ -22,13 +21,16 @@ public class InterestPoints {
             new LatLng(41.874249, -87.647262)
     );
 
-    // Draw all of the shapes (Could do this cleaner...)
+    // Draw all of the shapes
+    // Could do this cleaner by putting data in JSON
     public static void drawBuildingPolygons(GoogleMap mMap) {
         Polygon sce = mMap.addPolygon(new PolygonOptions() // Student Center East
                 .add(new LatLng(41.872527, -87.647666))
                 .add(new LatLng(41.872523, -87.648255))
                 .add(new LatLng(41.871304, -87.648207))
-                .add(new LatLng(41.871312, -87.647628)).fillColor(polygonFillColor).strokeColor(polygonStrokeColor)
+                .add(new LatLng(41.871312, -87.647628))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
         );
 
         Polygon sel = mMap.addPolygon(new PolygonOptions() //Science Engineering Labs
@@ -114,7 +116,8 @@ public class InterestPoints {
                 .add(new LatLng(41.872568, -87.649485))
                 .add(new LatLng(41.872584, -87.649055))
                 .add(new LatLng(41.872396, -87.649034))
-                .add(new LatLng(41.872379, -87.649489)).fillColor(polygonFillColor)
+                .add(new LatLng(41.872379, -87.649489))
+                .fillColor(polygonFillColor)
                 .strokeColor(polygonStrokeColor)
         );
         Polygon dh = mMap.addPolygon(new PolygonOptions() // Douglas Hall
@@ -129,6 +132,34 @@ public class InterestPoints {
                 .add(new LatLng(41.872954, -87.650112))
                 .add(new LatLng(41.872751, -87.650090))
                 .add(new LatLng(41.872766, -87.650546))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
+        Polygon gh = mMap.addPolygon(new PolygonOptions() // Grant Hall
+                .add(new LatLng(41.872955, -87.649620))
+                .add(new LatLng(41.872959, -87.649368))
+                .add(new LatLng(41.872775, -87.649352))
+                .add(new LatLng(41.872771, -87.649625))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
+        Polygon gym = mMap.addPolygon(new PolygonOptions() // UIC Gym
+                .add(new LatLng(41.873033, -87.646784))
+                .add(new LatLng(41.873060, -87.646136))
+                .add(new LatLng(41.872741, -87.646130))
+                .add(new LatLng(41.872741, -87.645985))
+                .add(new LatLng(41.872054, -87.645969))
+                .add(new LatLng(41.872066, -87.646795))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
+        Polygon aa = mMap.addPolygon(new PolygonOptions() // Art & Architecture Building
+                .add(new LatLng(41.873939, -87.648743))
+                .add(new LatLng(41.873643, -87.648336))
+                .add(new LatLng(41.873519, -87.648631))
+                .add(new LatLng(41.873415, -87.648518))
+                .add(new LatLng(41.873247, -87.648733))
+                .add(new LatLng(41.873651, -87.649130))
                 .fillColor(polygonFillColor)
                 .strokeColor(polygonStrokeColor)
         );
