@@ -1,6 +1,7 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.cs440project.InterestPoints.InterestPoints;
 import com.example.cs440project.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,6 +18,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -45,20 +51,17 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
         mMap = googleMap;
-        LatLng UIC = new LatLng(41.871899, -87.649252);
-        LatLngBounds UICBounds = new LatLngBounds(
-                new LatLng(41.869573, -87.651078),
-                new LatLng(41.874249, -87.647262)
-        );
+
+        InterestPoints.drawBuildingPolygons(mMap);
+
 //        places.put("UIC", UIC);
 //        myRef.setValue(places);
         // When map finished loading, prevents the error
         mMap.setOnMapLoadedCallback(() -> {
-            mMap.addMarker(new MarkerOptions().position(UIC).title("University of Illinois at Chicago"));
-            mMap.setLatLngBoundsForCameraTarget(UICBounds);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(UIC));
-            mMap.setMinZoomPreference(16.0f);
-            mMap.setMaxZoomPreference(17.0f);
+            mMap.setLatLngBoundsForCameraTarget(InterestPoints.uicBounds);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(InterestPoints.uicCenter));
+            mMap.setMinZoomPreference(17.0f);
+            mMap.setMaxZoomPreference(18.0f);
         });
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
