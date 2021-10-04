@@ -22,6 +22,7 @@ public class Fire {
         DatabaseReference myRef = database.getReference("Locations");
         try {
             HashMap<String, LatLngBounds> places = new HashMap<>();
+            // TODO All interest points should be a polygon and have > 4 vertices
             LatLngBounds SCEBounds = new LatLngBounds(
                     new LatLng(41.871302, -87.648222),
                     new LatLng(41.872526, -87.647667)

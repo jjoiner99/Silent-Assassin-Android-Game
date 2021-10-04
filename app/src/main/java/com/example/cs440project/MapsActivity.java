@@ -1,21 +1,22 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.cs440project.interestPoints.InterestPoints;
 import com.example.cs440project.databinding.ActivityMapsBinding;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.cs440project.mapPreference.MapPreference;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -45,24 +46,30 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
         mMap = googleMap;
-        LatLng UIC = new LatLng(41.871899, -87.649252);
-        LatLngBounds UICBounds = new LatLngBounds(
-                new LatLng(41.869573, -87.651078),
-                new LatLng(41.874249, -87.647262)
-        );
-//        places.put("UIC", UIC);
-//        myRef.setValue(places);
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            MapsActivity.this, R.raw.style_json));
+
+            if (!success) {
+                Log.e("Map", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("Map", "Can't find style.", e);
+        }
+        InterestPoints.drawBuildingPolygons(mMap); // Draws all of the buildings
+//        MapPreference.setMapStyle(mMap);
+
         // When map finished loading, prevents the error
-        mMap.setOnMapLoadedCallback(() -> {
-            mMap.addMarker(new MarkerOptions().position(UIC).title("University of Illinois at Chicago"));
-            mMap.setLatLngBoundsForCameraTarget(UICBounds);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(UIC));
-            mMap.setMinZoomPreference(16.0f);
-            mMap.setMaxZoomPreference(17.0f);
-        });
+        mMap.setOnMapLoadedCallback(MapPreference.setCamera(mMap));
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+
+
+
     }
 
     @Override
