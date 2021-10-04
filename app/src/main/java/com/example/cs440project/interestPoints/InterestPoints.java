@@ -1,4 +1,4 @@
-package com.example.cs440project.InterestPoints;
+package com.example.cs440project.interestPoints;
 
 import android.graphics.Color;
 
@@ -8,11 +8,13 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 // Find coordinates using https://www.latlong.net/
-
+// Map styled with https://mapstyle.withgoogle.com/
 public class InterestPoints {
+    private static float[] hsv = new float[3];
+
     // Colors of Buildings
-    private static int polygonFillColor = Color.RED;
-    private static int polygonStrokeColor = Color.RED;
+    private static int polygonFillColor = Color.parseColor("#1DA1F2");
+    private static int polygonStrokeColor = Color.parseColor("#1DA1F2");
 
     public static LatLng uicCenter = new LatLng(41.871899, -87.649252);
     public static LatLngBounds uicBounds = new LatLngBounds(
@@ -20,7 +22,7 @@ public class InterestPoints {
             new LatLng(41.874249, -87.647262)
     );
 
-    // Draw all of the shapes
+    // Draw all of the shapes (Could do this cleaner...)
     public static void drawBuildingPolygons(GoogleMap mMap) {
         Polygon sce = mMap.addPolygon(new PolygonOptions() // Student Center East
                 .add(new LatLng(41.872527, -87.647666))

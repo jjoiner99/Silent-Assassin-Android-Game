@@ -1,27 +1,22 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.cs440project.InterestPoints.InterestPoints;
+import com.example.cs440project.interestPoints.InterestPoints;
 import com.example.cs440project.databinding.ActivityMapsBinding;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.cs440project.mapPreference.MapPreference;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -51,21 +46,30 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
         mMap = googleMap;
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            MapsActivity.this, R.raw.style_json));
 
-        InterestPoints.drawBuildingPolygons(mMap);
+            if (!success) {
+                Log.e("Map", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("Map", "Can't find style.", e);
+        }
+        InterestPoints.drawBuildingPolygons(mMap); // Draws all of the buildings
+//        MapPreference.setMapStyle(mMap);
 
-//        places.put("UIC", UIC);
-//        myRef.setValue(places);
         // When map finished loading, prevents the error
-        mMap.setOnMapLoadedCallback(() -> {
-            mMap.setLatLngBoundsForCameraTarget(InterestPoints.uicBounds);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(InterestPoints.uicCenter));
-            mMap.setMinZoomPreference(17.0f);
-            mMap.setMaxZoomPreference(18.0f);
-        });
+        mMap.setOnMapLoadedCallback(MapPreference.setCamera(mMap));
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+
+
+
     }
 
     @Override
