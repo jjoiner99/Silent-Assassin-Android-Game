@@ -46,30 +46,16 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
         mMap = googleMap;
-        try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            boolean success = mMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            MapsActivity.this, R.raw.style_json));
 
-            if (!success) {
-                Log.e("Map", "Style parsing failed.");
-            }
-        } catch (Resources.NotFoundException e) {
-            Log.e("Map", "Can't find style.", e);
-        }
+        MapPreference.setMapStyle(mMap, MapsActivity.this); // Set blue style to mMap
         InterestPoints.drawBuildingPolygons(mMap); // Draws all of the buildings
-//        MapPreference.setMapStyle(mMap);
+        InterestPoints.drawUicBounds(mMap); // Draws stroke around uic block
 
         // When map finished loading, prevents the error
         mMap.setOnMapLoadedCallback(MapPreference.setCamera(mMap));
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-
-
-
     }
 
     @Override

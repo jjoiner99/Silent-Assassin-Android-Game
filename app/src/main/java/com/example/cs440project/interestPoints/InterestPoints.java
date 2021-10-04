@@ -1,10 +1,15 @@
 package com.example.cs440project.interestPoints;
 
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.util.Log;
 
+import com.example.cs440project.MapsActivity;
+import com.example.cs440project.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 // Find coordinates using https://www.latlong.net/
@@ -162,6 +167,18 @@ public class InterestPoints {
                 .add(new LatLng(41.873651, -87.649130))
                 .fillColor(polygonFillColor)
                 .strokeColor(polygonStrokeColor)
+        );
+    }
+
+    public static void drawUicBounds(GoogleMap mMap) {
+        Polygon uicBounds = mMap.addPolygon(new PolygonOptions()
+                .add(new LatLng(41.874153, -87.653365))
+                .add(new LatLng(41.874265, -87.647310))
+                .add(new LatLng(41.867299, -87.647094))
+                .add(new LatLng(41.867299, -87.650873))
+                .add(new LatLng(41.873099, -87.651089))
+                .add(new LatLng(41.873099, -87.653387))
+                .strokeColor(polygonStrokeColor).strokeWidth(2f)
         );
     }
 }
