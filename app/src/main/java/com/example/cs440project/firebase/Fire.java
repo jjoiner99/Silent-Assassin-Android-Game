@@ -7,11 +7,14 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Fire {
     //Logcat TAG
     private static final String TAG = "firebaseService";
+    private static final HashMap<String, LatLngBounds> places = new HashMap<>();
     // Reference
     private DatabaseReference myRef;
 
@@ -21,7 +24,6 @@ public class Fire {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Locations");
         try {
-            HashMap<String, LatLngBounds> places = new HashMap<>();
             // TODO All interest points should be a polygon and have > 4 vertices
             LatLngBounds SCEBounds = new LatLngBounds(
                     new LatLng(41.871302, -87.648222),
@@ -90,5 +92,9 @@ public class Fire {
 
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation() {
+    }
+
+    public static HashMap<String, LatLngBounds> getMap(){
+        return places;
     }
 }

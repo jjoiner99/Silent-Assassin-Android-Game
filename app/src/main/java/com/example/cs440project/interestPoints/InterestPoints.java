@@ -1,17 +1,17 @@
 package com.example.cs440project.interestPoints;
 
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.util.Log;
 
-import com.example.cs440project.MapsActivity;
-import com.example.cs440project.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 // Find coordinates using https://www.latlong.net/
 // Map styled with https://mapstyle.withgoogle.com/
 public class InterestPoints {
@@ -19,6 +19,7 @@ public class InterestPoints {
     // Colors of Buildings
     private static int polygonFillColor = Color.parseColor("#1DA1F2");
     private static int polygonStrokeColor = Color.parseColor("#1DA1F2");
+//    private static LatLngBounds SCEBounds;
 
     public static LatLng uicCenter = new LatLng(41.871899, -87.649252);
     public static LatLngBounds uicBounds = new LatLngBounds(
