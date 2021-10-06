@@ -33,6 +33,7 @@ public class MapsActivity extends FragmentActivity
     private GoogleMap mMap;
     private FusedLocationProviderClient FSL;
     private HashMap<String, LatLngBounds> places;
+    private String TAG = "Maps Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,15 +82,17 @@ public class MapsActivity extends FragmentActivity
 
     @SuppressLint("MissingPermission")
     public void isUserInPOI() {
+        Log.i(TAG, "Clicked ");
         AtomicBoolean isInPlace = new AtomicBoolean(false);
         FSL.getLastLocation().addOnSuccessListener(this, (OnSuccessListener<Location>) location -> {
             if (location != null) {
                 LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
                 for (Map.Entry place : places.entrySet()) {
-                    String POI = (String)place.getKey();
+                    String POI = "You are in the " + (String) place.getKey();
                     LatLngBounds b = (LatLngBounds) place.getValue();
                     if (b.contains(current)) {
-                        Toast.makeText(MapsActivity.this, "You are in " + POI, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MapsActivity.this, POI, Toast.LENGTH_LONG).show();
+                        Log.i(TAG, POI);
                         isInPlace.set(true);
                         break;
                     }
