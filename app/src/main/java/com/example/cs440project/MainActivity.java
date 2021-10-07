@@ -16,8 +16,6 @@ import com.example.cs440project.firebase.Fire;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    //Logcat TAG
-    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

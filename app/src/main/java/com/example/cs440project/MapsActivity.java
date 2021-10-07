@@ -66,8 +66,7 @@ public class MapsActivity extends FragmentActivity
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(this, "Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude(), Toast.LENGTH_LONG).show();
     }
-
-
+    
     @SuppressLint("MissingPermission")
     public void isUserInPOI() {
         String TAG = "Maps Activity";
