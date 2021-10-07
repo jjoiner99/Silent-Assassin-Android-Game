@@ -15,8 +15,6 @@ public class Fire {
     //Logcat TAG
     private static final String TAG = "firebaseService";
     private static final HashMap<String, LatLngBounds> places = new HashMap<>();
-    // Reference
-    private DatabaseReference myRef;
 
     // Init database should only be called if we decide to change the long and lat of an area but not onCreate
     public static void initDatabase() {
@@ -92,9 +90,5 @@ public class Fire {
 
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation() {
-    }
-
-    public static HashMap<String, LatLngBounds> getMap(){
-        return places;
     }
 }
