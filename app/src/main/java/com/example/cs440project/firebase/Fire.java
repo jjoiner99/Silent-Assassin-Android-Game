@@ -2,14 +2,21 @@ package com.example.cs440project.firebase;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Fire {
     //Logcat TAG
@@ -89,6 +96,42 @@ public class Fire {
 
 
     // TODO - fetch other players coodinates
-    public static void fetchMultiPlayLocation() {
+    public static void fetchMultiPlayLocation(GoogleMap mMap) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Players");
+//        HashMap<String, LatLng> plays = new HashMap<>();
+//        LatLng player1 = new LatLng(42.8996074, -88.6496218);
+//        plays.put("Player 1", player1);
+//        LatLng player2 = new LatLng(52.8996074, -78.6496218);
+//        plays.put("Player 2", player2);
+//        myRef.setValue(plays);
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Double lon = ds.child("longitude").getValue(Double.class);
+                    Double lat = ds.child("latitude").getValue(Double.class);
+                    String username = ds.child("username").getValue(String.class);
+                    LatLng coord = new LatLng(lat, lon);
+                    multiPlayerCoord.put(username, coord);
+                }
+
+                for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
+                    // Print
+                    Log.d(TAG, entry.getKey() + " : " + entry.getValue());
+                    Marker mMarker = mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey()));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        myRef.addValueEventListener(postListener);
     }
 }
