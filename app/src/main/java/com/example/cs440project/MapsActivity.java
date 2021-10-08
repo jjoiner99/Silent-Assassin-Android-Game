@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
@@ -35,6 +37,8 @@ public class MapsActivity extends FragmentActivity
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private Location currentLocation;
+    private double lat;
+    private double lon;
 
 
     @Override
@@ -100,8 +104,17 @@ public class MapsActivity extends FragmentActivity
                 super.onLocationResult(locationResult);
                 currentLocation = locationResult.getLastLocation();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("SingleUser");
-                myRef.setValue(currentLocation);
+                DatabaseReference totalRef = database.getReference("CompleteUserData");
+                DatabaseReference singleRef = database.getReference("CoordUserData");
+                lat = currentLocation.getLatitude();
+                lon = currentLocation.getLongitude();
+                HashMap<String, HashMap<String, Double>> user = new HashMap<>();
+                HashMap<String, Double> data = new HashMap<>();
+                data.put("Latitude", lat);
+                data.put("Longitude", lon);
+                user.put("Coordinates", data);
+                totalRef.setValue(currentLocation);
+                singleRef.setValue(user);
             }
         };
     }
