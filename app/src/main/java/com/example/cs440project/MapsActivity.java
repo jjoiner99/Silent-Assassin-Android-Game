@@ -23,8 +23,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
@@ -115,6 +118,7 @@ public class MapsActivity extends FragmentActivity
                 user.put("Coordinates", data);
                 totalRef.setValue(currentLocation);
                 singleRef.setValue(user);
+                grabData();
             }
         };
     }
@@ -132,6 +136,27 @@ public class MapsActivity extends FragmentActivity
         FSL.requestLocationUpdates(locationRequest,
                 locationCallback,
                 Looper.getMainLooper());
+    }
+
+    private void grabData() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("CoordUserData");
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Double lat = ds.child("Latitude").getValue(Double.class);
+                    Double lon = ds.child("Longitude").getValue(Double.class);
+                    Log.i("DataRet", "Latitude: " + lat + " Longitude: " + lon);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("Retrieve", "Read failed");
+            }
+        });
     }
 
 }
