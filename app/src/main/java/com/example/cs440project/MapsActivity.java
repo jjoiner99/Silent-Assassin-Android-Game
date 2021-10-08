@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.cs440project.databinding.ActivityMapsBinding;
+import com.example.cs440project.firebase.Fire;
 import com.example.cs440project.interestPoints.InterestPoints;
 import com.example.cs440project.locationCheck.locationCheck;
 import com.example.cs440project.mapPreference.MapPreference;
@@ -63,11 +64,10 @@ public class MapsActivity extends FragmentActivity
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-
         MapPreference.setMapStyle(googleMap, MapsActivity.this); // Set blue style to mMap
         InterestPoints.drawBuildingPolygons(googleMap); // Draws all of the buildings
         InterestPoints.drawUicBounds(googleMap); // Draws stroke around uic block
-
+        Fire.fetchMultiPlayLocation(googleMap);
         // When map finished loading, prevents the error
         googleMap.setOnMapLoadedCallback(MapPreference.setCamera(googleMap));
         googleMap.setMyLocationEnabled(true);
