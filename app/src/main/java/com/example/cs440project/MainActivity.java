@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.cs440project.firebase.Fire;
+
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,8 +23,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Objects.requireNonNull(getSupportActionBar()).hide(); // hide the title bar
         setContentView(R.layout.activity_main);
-//        Init database should only be called if we decide to change the long and lat of an area but not onCreate
-//        Fire.initDatabase();
     }
 
     public void handleStartBtn(View view) {
