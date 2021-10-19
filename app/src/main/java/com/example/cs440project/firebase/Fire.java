@@ -13,10 +13,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Fire {
     //Logcat TAG
@@ -94,6 +93,36 @@ public class Fire {
         return false;
     }
 
+    public static void initQuestTable(){
+
+    }
+
+    public static void initLogsTable(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference logsRef = database.getReference("Logs").child("Config");
+        HashMap<String, String> log = new HashMap<>();
+        log.put("ConnectionString","Bologna");
+        logsRef.setValue(log);
+    }
+
+    // Write a log to the Logs table on firebase. Use this for sending errors.
+    public static void logToDatabase(String logType, String logDescription){
+        // Reference to database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        // Create a unique id string
+        String uuid = UUID.randomUUID().toString();
+
+        // Instantiate a new log object
+        FireLog currentLog = new FireLog(uuid,logType, logDescription);
+
+        // Create a new child in the db using the uuid
+        // Create a new child in the db using the uuid
+        DatabaseReference logsRef = database.getReference("Logs").child(currentLog.getLogType()+"-"+uuid);
+
+        // Write to the db
+        logsRef.setValue(currentLog);
+    }
 
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
