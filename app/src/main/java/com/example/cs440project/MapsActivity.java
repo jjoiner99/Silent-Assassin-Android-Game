@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.example.cs440project.firebase.Fire;
 import com.example.cs440project.interestPoints.InterestPoints;
 import com.example.cs440project.locationCheck.locationCheck;
 import com.example.cs440project.mapPreference.MapPreference;
+import com.example.cs440project.user.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -43,6 +45,7 @@ public class MapsActivity extends FragmentActivity
     private Location currentLocation;
     private double lat;
     private double lon;
+    private User user = new User();
 
 
     @Override
@@ -59,6 +62,7 @@ public class MapsActivity extends FragmentActivity
         createLocationRequest();
         createLocationCallback();
         FSL = LocationServices.getFusedLocationProviderClient(this);
+        Log.i("ID", user.getID());
     }
 
     @SuppressLint("MissingPermission")
@@ -107,17 +111,13 @@ public class MapsActivity extends FragmentActivity
                 super.onLocationResult(locationResult);
                 currentLocation = locationResult.getLastLocation();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference totalRef = database.getReference("CompleteUserData");
-                DatabaseReference singleRef = database.getReference("CoordUserData");
+//                DatabaseReference totalRef = database.getReference("CompleteUserData");
+                DatabaseReference singleRef = database.getInstance().getReference();
                 lat = currentLocation.getLatitude();
                 lon = currentLocation.getLongitude();
-                HashMap<String, HashMap<String, Double>> user = new HashMap<>();
-                HashMap<String, Double> data = new HashMap<>();
-                data.put("Latitude", lat);
-                data.put("Longitude", lon);
-                user.put("Coordinates", data);
-                totalRef.setValue(currentLocation);
-                singleRef.setValue(user);
+                user.setLat(lat);
+                user.setLon(lon);
+                singleRef.child("Users").child(user.getUsername()).setValue(user);
                 grabData();
             }
         };
