@@ -19,7 +19,8 @@
         android:layout_gravity="center|bottom"
         android:layout_marginBottom="80dp"
         android:text="Collect bounty"
-        android:textColor="@color/black"
-        android:backgroundTint="@color/white"/>
+        android:textColor="@color/purple_700"
+        android:backgroundTint="@color/orange"
+        android:visibility="invisible"/>
 
 </FrameLayout>
