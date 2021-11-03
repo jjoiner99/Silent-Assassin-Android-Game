@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.renderscript.Sampler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,10 +48,16 @@ public class MapsActivity extends FragmentActivity
     private double lat;
     private double lon;
     private User user = new User();
+    private Button customButton;
+    int loc;
+    String DailyBounty;
+    boolean visible = false;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDailyBounty();
         super.onCreate(savedInstanceState);
 
         com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
@@ -63,6 +71,7 @@ public class MapsActivity extends FragmentActivity
         createLocationCallback();
         FSL = LocationServices.getFusedLocationProviderClient(this);
         Log.i("ID", user.getID());
+        customButton = findViewById(R.id.customButton);
     }
 
     @SuppressLint("MissingPermission")
@@ -94,7 +103,6 @@ public class MapsActivity extends FragmentActivity
     @SuppressLint("MissingPermission")
     public void isUserInPOI() {
         String TAG = "Maps Activity";
-        Log.i(TAG, "Clicked ");
         FSL.getLastLocation().addOnSuccessListener(this, location -> {
             if (location != null) {
                 locationCheck.check(this, location.getLatitude(), location.getLongitude());
@@ -111,7 +119,6 @@ public class MapsActivity extends FragmentActivity
                 super.onLocationResult(locationResult);
                 currentLocation = locationResult.getLastLocation();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-//                DatabaseReference totalRef = database.getReference("CompleteUserData");
                 DatabaseReference singleRef = database.getInstance().getReference();
                 lat = currentLocation.getLatitude();
                 lon = currentLocation.getLongitude();
@@ -139,24 +146,71 @@ public class MapsActivity extends FragmentActivity
     }
 
     private void grabData() {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("CoordUserData");
+        String curLoc = locationCheck.checkLocation(lat, lon);
+        Log.i("current", curLoc);
+        if (curLoc == DailyBounty) {
+            Log.i("Button", "Turning visible");
+            customButton.setVisibility(View.VISIBLE);
+            visible = true;
+        } else if (curLoc != DailyBounty && visible) {
+            Log.i("Button", "Turning invisible");
+            customButton.setVisibility(View.INVISIBLE);
+            visible = false;
+        }
+    }
 
+    //TODO Get the place where the Daily bounty is in
+    public void getDailyBounty() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Double lat = ds.child("Latitude").getValue(Double.class);
-                    Double lon = ds.child("Longitude").getValue(Double.class);
-                    Log.i("DataRet", "Latitude: " + lat + " Longitude: " + lon);
-                }
+                loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
+                getDailyLocation(loc);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("Retrieve", "Read failed");
+                Log.i("DailyQuest", "Couldn't get Quest");
             }
         });
+    }
+
+    public void getDailyLocation(int locationID) {
+        Log.i("DailyLocation", "" + locationID);
+        switch (locationID){
+            case 1:
+                DailyBounty = "ARC";
+                break;
+            case 2:
+                DailyBounty = "BSB";
+                break;
+            case 3:
+                DailyBounty = "CirclePark";
+                break;
+            case 4:
+                DailyBounty = "Library";
+                break;
+            case 5:
+                DailyBounty = "Quad";
+                break;
+            case 6:
+                DailyBounty = "SCE";
+                break;
+            case 7:
+                DailyBounty = "SELE";
+                break;
+            case 8:
+                DailyBounty = "SELW";
+                break;
+            default:
+                DailyBounty = "";
+        }
+    }
+
+    // TODO Get place where the bounty assigned is in
+    public String getBounty(int bounty) {
+        return "";
     }
 
 }

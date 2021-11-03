@@ -70,7 +70,7 @@ public class locationCheck {
     }
 
     // Check the current user location if they are in a POI
-    public static void check(Activity context, double lat, double lon) {
+    public static String check(Activity context, double lat, double lon) {
         initMap();
         LatLng current = new LatLng(lat, lon);
         for (Map.Entry place : getMap().entrySet()) {
@@ -80,9 +80,22 @@ public class locationCheck {
             if (b.contains(current)) {
                 Toast.makeText(context, POI, Toast.LENGTH_LONG).show();
                 Log.i("Location Check", POI);
-                return;
+                return (String) place.getKey();
             }
         }
         Toast.makeText(context, "You are not in a POI", Toast.LENGTH_SHORT).show();
+        return "";
+    }
+
+    public static String checkLocation(double lat, double lon) {
+        initMap();
+        LatLng current = new LatLng(lat, lon);
+        for (Map.Entry place : getMap().entrySet()) {
+            LatLngBounds b = (LatLngBounds)  place.getValue();
+            if (b.contains(current)) {
+                return (String) place.getKey();
+            }
+        }
+        return "";
     }
 }
