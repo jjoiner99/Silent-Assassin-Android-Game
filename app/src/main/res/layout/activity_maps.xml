@@ -18,9 +18,21 @@
         android:id="@+id/customButton"
         android:layout_gravity="center|bottom"
         android:layout_marginBottom="80dp"
-        android:text="Collect bounty"
-        android:textColor="@color/purple_700"
-        android:backgroundTint="@color/orange"
+        android:text="@string/collect_bounty"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/teal_700"
         android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/score"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:background="@color/teal_700"
+        android:textColor="@color/black"/>
 
 </FrameLayout>

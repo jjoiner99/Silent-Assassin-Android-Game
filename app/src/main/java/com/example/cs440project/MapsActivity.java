@@ -8,6 +8,7 @@ import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity
@@ -41,6 +44,7 @@ public class MapsActivity extends FragmentActivity
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener {
 
+    private TextView score;
     private FusedLocationProviderClient FSL;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -72,6 +76,8 @@ public class MapsActivity extends FragmentActivity
         createLocationCallback();
         FSL = LocationServices.getFusedLocationProviderClient(this);
         Log.i("ID", user.getID());
+        score = findViewById(R.id.scoreText);
+        updateScore();
         customButton = findViewById(R.id.customButton);
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +87,7 @@ public class MapsActivity extends FragmentActivity
                 user.addPoints(10);
                 dailyRedeemed = true;
                 customButton.setVisibility(View.INVISIBLE);
+                updateScore();
             }
         });
     }
@@ -221,6 +228,10 @@ public class MapsActivity extends FragmentActivity
     // TODO Get place where the bounty assigned is in
     public String getBounty(int bounty) {
         return "";
+    }
+
+    public void updateScore() {
+        score.setText(String.valueOf(user.getPoints()));
     }
 
 }
