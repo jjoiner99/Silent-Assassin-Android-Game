@@ -52,6 +52,7 @@ public class MapsActivity extends FragmentActivity
     int loc;
     String DailyBounty;
     boolean visible = false;
+    boolean dailyRedeemed = false;
 
 
 
@@ -72,6 +73,16 @@ public class MapsActivity extends FragmentActivity
         FSL = LocationServices.getFusedLocationProviderClient(this);
         Log.i("ID", user.getID());
         customButton = findViewById(R.id.customButton);
+        customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("Points", "Added 10 Points");
+                Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+                user.addPoints(10);
+                dailyRedeemed = true;
+                customButton.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -148,7 +159,7 @@ public class MapsActivity extends FragmentActivity
     private void grabData() {
         String curLoc = locationCheck.checkLocation(lat, lon);
         Log.i("current", curLoc);
-        if (curLoc == DailyBounty) {
+        if (curLoc == DailyBounty && dailyRedeemed == false) {
             Log.i("Button", "Turning visible");
             customButton.setVisibility(View.VISIBLE);
             visible = true;
@@ -159,7 +170,6 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
-    //TODO Get the place where the Daily bounty is in
     public void getDailyBounty() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
         ref.addValueEventListener(new ValueEventListener() {
