@@ -11,10 +11,12 @@ public class User {
     private double lon;
     private double lat;
     private String ID;
+    private int points;
 
     public User() {
         ID = UUID.randomUUID().toString();
         username = ID;
+        points = 0;
     }
 
     public static User getInstance() {
@@ -22,6 +24,18 @@ public class User {
             instance = new User();
         }
         return instance;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void addPoints(int points) {
+        this.points += points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public String getUsername() {
