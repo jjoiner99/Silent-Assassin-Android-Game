@@ -24,13 +24,21 @@ public class InterestPoints {
 
     public static LatLng uicCenter = new LatLng(41.871899, -87.649252);
     public static LatLngBounds uicBounds = new LatLngBounds(
-            new LatLng(41.869573, -87.651078),
-            new LatLng(41.874249, -87.647262)
+            new LatLng(41.867228, -87.651078),
+            new LatLng(41.873843, -87.647262)
     );
 
     // Draw all of the shapes
     // Could do this cleaner by putting data in JSON
     public static void drawBuildingPolygons(GoogleMap mMap) {
+        Polygon arc = mMap.addPolygon(new PolygonOptions() // Student Center East
+                .add(new LatLng(41.874522, -87.651597))
+                .add(new LatLng(41.874558, -87.650029))
+                .add(new LatLng(41.874969, -87.650394))
+                .add(new LatLng(41.874937, -87.651613))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
         Polygon sce = mMap.addPolygon(new PolygonOptions() // Student Center East
                 .add(new LatLng(41.872527, -87.647666))
                 .add(new LatLng(41.872523, -87.648255))
@@ -39,7 +47,6 @@ public class InterestPoints {
                 .fillColor(polygonFillColor)
                 .strokeColor(polygonStrokeColor)
         );
-
         Polygon sel = mMap.addPolygon(new PolygonOptions() //Science Engineering Labs
                 .add(new LatLng(41.870756, -87.649418))
                 .add(new LatLng(41.870061, -87.649394))
