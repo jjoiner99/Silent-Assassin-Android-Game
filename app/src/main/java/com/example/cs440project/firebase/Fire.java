@@ -129,6 +129,7 @@ public class Fire {
         return multiPlayerCoord;
     }
 
+
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -143,7 +144,7 @@ public class Fire {
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
+                HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Double lon = ds.child("longitude").getValue(Double.class);
