@@ -134,12 +134,6 @@ public class Fire {
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Players");
-//        HashMap<String, LatLng> plays = new HashMap<>();
-//        LatLng player1 = new LatLng(42.8996074, -88.6496218);
-//        plays.put("Player 1", player1);
-//        LatLng player2 = new LatLng(52.8996074, -78.6496218);
-//        plays.put("Player 2", player2);
-//        myRef.setValue(plays);
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -150,6 +144,7 @@ public class Fire {
                     Double lon = ds.child("longitude").getValue(Double.class);
                     Double lat = ds.child("latitude").getValue(Double.class);
                     String username = ds.child("username").getValue(String.class);
+                    Log.i("Players", "Lat: " + lat + " Lon: " + lon);
                     LatLng coord = new LatLng(lat, lon);
                     multiPlayerCoord.put(username, coord);
                 }
@@ -157,7 +152,7 @@ public class Fire {
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
                     // Print
                     Log.d(TAG, entry.getKey() + " : " + entry.getValue());
-                    Marker mMarker = mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey()));
+                    mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey()));
                 }
             }
 
