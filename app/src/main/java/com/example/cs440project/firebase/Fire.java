@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class Fire {
     private static final String TAG = "firebaseService";
     private static final HashMap<String, LatLngBounds> places = new HashMap<>();
     private static final HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
+    private static final ArrayList<Marker> markers = new ArrayList<>();
 
     // Init database should only be called if we decide to change the long and lat of an area but not onCreate
     public static void initDatabase() {
@@ -129,6 +131,8 @@ public class Fire {
         return multiPlayerCoord;
     }
 
+    public static ArrayList<Marker> getMarkers() {return markers; }
+
 
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
@@ -151,7 +155,7 @@ public class Fire {
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
                     // Print
                     Log.d(TAG, entry.getKey() + " : " + entry.getValue());
-                    mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey()));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey())));
                 }
             }
 
