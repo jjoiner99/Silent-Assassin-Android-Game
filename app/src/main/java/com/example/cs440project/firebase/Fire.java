@@ -138,7 +138,6 @@ public class Fire {
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Double lon = ds.child("longitude").getValue(Double.class);
