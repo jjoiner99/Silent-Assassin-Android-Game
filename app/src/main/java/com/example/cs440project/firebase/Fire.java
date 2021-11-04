@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class Fire {
     private static final String TAG = "firebaseService";
     private static final HashMap<String, LatLngBounds> places = new HashMap<>();
     private static final HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
+    private static final ArrayList<Marker> markers = new ArrayList<>();
 
     // Init database should only be called if we decide to change the long and lat of an area but not onCreate
     public static void initDatabase() {
@@ -129,27 +131,23 @@ public class Fire {
         return multiPlayerCoord;
     }
 
+    public static ArrayList<Marker> getMarkers() {return markers; }
+
 
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Players");
-//        HashMap<String, LatLng> plays = new HashMap<>();
-//        LatLng player1 = new LatLng(42.8996074, -88.6496218);
-//        plays.put("Player 1", player1);
-//        LatLng player2 = new LatLng(52.8996074, -78.6496218);
-//        plays.put("Player 2", player2);
-//        myRef.setValue(plays);
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Double lon = ds.child("longitude").getValue(Double.class);
                     Double lat = ds.child("latitude").getValue(Double.class);
                     String username = ds.child("username").getValue(String.class);
+                    Log.i("Players", "Lat: " + lat + " Lon: " + lon);
                     LatLng coord = new LatLng(lat, lon);
                     multiPlayerCoord.put(username, coord);
                 }
@@ -157,7 +155,7 @@ public class Fire {
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
                     // Print
                     Log.d(TAG, entry.getKey() + " : " + entry.getValue());
-                    Marker mMarker = mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey()));
+                    markers.add(mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey())));
                 }
             }
 
