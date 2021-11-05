@@ -69,6 +69,7 @@ public class MapsActivity extends FragmentActivity
     String DailyBounty;
     boolean visible = false;
     boolean dailyRedeemed = false;
+    private TextView ppTV; // Popup TextView
 
 
     ArrayList<Integer> userQuestId = new ArrayList<Integer>();
@@ -84,9 +85,10 @@ public class MapsActivity extends FragmentActivity
         user.setRole(i.getIntExtra("role", 0));
         Log.i("user", Integer.toString(user.getRole()));
 
-        // Retrieve the latest bounty
         getDailyBounty();
+        // Retrieve the latest bounty
         super.onCreate(savedInstanceState);
+
 
         com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -102,26 +104,23 @@ public class MapsActivity extends FragmentActivity
         score = findViewById(R.id.scoreText);
         updateScore();
         customButton = findViewById(R.id.customButton);
-        customButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        customButton.setOnClickListener(v -> {
 
-                String curLoc = locationCheck.checkLocation(lat, lon);
-                // If we are in a user quest
-                if(userQuestKey.contains(curLoc)){
-                    // Remove daily quest from the list
-                    userQuestKey.remove(curLoc);
-                    Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
-                    user.addPoints(10);
-                } else{
-                    Log.i("Points", "Added 40 Points");
-                    Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
-                    user.addPoints(40);
-                    dailyRedeemed = true;
-                }
-                customButton.setVisibility(View.INVISIBLE);
-                updateScore();
+            String curLoc = locationCheck.checkLocation(lat, lon);
+            // If we are in a user quest
+            if(userQuestKey.contains(curLoc)){
+                // Remove daily quest from the list
+                userQuestKey.remove(curLoc);
+                Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+                user.addPoints(10);
+            } else{
+                Log.i("Points", "Added 40 Points");
+                Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
+                user.addPoints(40);
+                dailyRedeemed = true;
             }
+            customButton.setVisibility(View.INVISIBLE);
+            updateScore();
         });
     }
 
@@ -260,9 +259,6 @@ public class MapsActivity extends FragmentActivity
                 loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
                 DailyBounty = getDailyLocation(loc);
                 Log.i("DailyQuest", "Daily Bounty = " + DailyBounty);
-
-                // Generate 4 quests for the user
-                generateRandomQuests(4);
             }
 
             @Override
@@ -311,8 +307,23 @@ public class MapsActivity extends FragmentActivity
         final PopupWindow popup = new PopupWindow(popView, width, height, true);
         popup.setElevation(20);
 
+        generateRandomQuests(4);
+        StringBuilder builder = new StringBuilder();
+        builder.append("Quests Available:\n");
+        for (int i = 0; i < userQuestKey.size(); i++) {
+            if (i != userQuestKey.size()-1) {
+                builder.append(userQuestKey.get(i) + "\n");
+            } else {
+                builder.append(userQuestKey.get(i));
+            }
+        }
+        Log.i("quests", builder.toString());
+
         // Show popup
         popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        ppTV = popup.getContentView().findViewById(R.id.popupTextView);
+        ppTV.setText(builder.toString());
 
         // Dismiss the popup when touched
         popView.setOnTouchListener((view1, motionEvent) -> {
