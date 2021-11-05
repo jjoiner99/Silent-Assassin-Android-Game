@@ -43,6 +43,7 @@ import org.w3c.dom.Text;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -63,6 +64,9 @@ public class MapsActivity extends FragmentActivity
     boolean visible = false;
     boolean dailyRedeemed = false;
 
+
+    ArrayList<Integer> userQuestId = new ArrayList<Integer>();
+    ArrayList<String> userQuestKey = new ArrayList<String>();
 
 
     @Override
@@ -87,10 +91,20 @@ public class MapsActivity extends FragmentActivity
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("Points", "Added 10 Points");
-                Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
-                user.addPoints(10);
-                dailyRedeemed = true;
+
+                String curLoc = locationCheck.checkLocation(lat, lon);
+                // If we are in a user quest
+                if(userQuestKey.contains(curLoc)){
+                    // Remove daily quest from the list
+                    userQuestKey.remove(curLoc);
+                    Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+                    user.addPoints(10);
+                } else{
+                    Log.i("Points", "Added 40 Points");
+                    Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
+                    user.addPoints(40);
+                    dailyRedeemed = true;
+                }
                 customButton.setVisibility(View.INVISIBLE);
                 updateScore();
             }
@@ -187,7 +201,7 @@ public class MapsActivity extends FragmentActivity
     private void grabData() {
         String curLoc = locationCheck.checkLocation(lat, lon);
         Log.i("current", curLoc);
-        if (curLoc == DailyBounty && dailyRedeemed == false) {
+        if (curLoc == DailyBounty && dailyRedeemed == false || userQuestKey.contains(curLoc)) {
             Log.i("Button", "Turning visible");
             customButton.setVisibility(View.VISIBLE);
             visible = true;
@@ -198,13 +212,42 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    // populate userQuestsKeys list with non repeating non dailybounty quests
+    public void generateRandomQuests(int numQuests){
+        Random randomGenerator = new Random();
+        while (userQuestId.size() < numQuests) {
+
+            // Random Num between 1 - 8
+            int randomId = randomGenerator .nextInt(8);
+            String questKey = getDailyLocation(randomId+1);
+
+            // No duplicates!
+            if (!userQuestId.contains(randomId)) {
+                // Can't be the daily!
+                if (DailyBounty == questKey){
+                    Log.i("DailyQuest", "Couldn't add daily Quest");
+                } else {
+                    // Add to list
+                    Log.i("DailyQuest", "Adding " + questKey);
+                    userQuestId.add(randomId);
+                    userQuestKey.add(questKey);
+                }
+            }
+        }
+    }
+
     public void getDailyBounty() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                // Loc = the id of daily location
                 loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
-                getDailyLocation(loc);
+                DailyBounty = getDailyLocation(loc);
+                Log.i("DailyQuest", "Daily Bounty = " + DailyBounty);
+
+                // Generate 4 quests for the user
+                generateRandomQuests(4);
             }
 
             @Override
@@ -214,35 +257,26 @@ public class MapsActivity extends FragmentActivity
         });
     }
 
-    public void getDailyLocation(int locationID) {
-        Log.i("DailyLocation", "" + locationID);
+    public String getDailyLocation(int locationID) {
         switch (locationID){
             case 1:
-                DailyBounty = "ARC";
-                break;
+                return "ARC";
             case 2:
-                DailyBounty = "BSB";
-                break;
+                return "BSB";
             case 3:
-                DailyBounty = "CirclePark";
-                break;
+                return "CirclePark";
             case 4:
-                DailyBounty = "Library";
-                break;
+                return"Library";
             case 5:
-                DailyBounty = "Quad";
-                break;
+                return "Quad";
             case 6:
-                DailyBounty = "SCE";
-                break;
+                return "SCE";
             case 7:
-                DailyBounty = "SELE";
-                break;
+                return "SELE";
             case 8:
-                DailyBounty = "SELW";
-                break;
+                return "SELW";
             default:
-                DailyBounty = "";
+                return "";
         }
     }
 
