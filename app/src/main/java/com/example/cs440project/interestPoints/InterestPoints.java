@@ -31,6 +31,16 @@ public class InterestPoints {
     // Draw all of the shapes
     // Could do this cleaner by putting data in JSON
     public static void drawBuildingPolygons(GoogleMap mMap) {
+
+        Polygon circlepark = mMap.addPolygon(new PolygonOptions() // Student Center East
+                .add(new LatLng(41.870561, -87.649634))
+                .add(new LatLng(41.869756, -87.649668))
+                .add(new LatLng(41.869740, -87.650977))
+                .add(new LatLng(41.870587, -87.650998))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
+
         Polygon arc = mMap.addPolygon(new PolygonOptions() // Student Center East
                 .add(new LatLng(41.874522, -87.651597))
                 .add(new LatLng(41.874558, -87.650029))
@@ -47,11 +57,28 @@ public class InterestPoints {
                 .fillColor(polygonFillColor)
                 .strokeColor(polygonStrokeColor)
         );
-        Polygon sel = mMap.addPolygon(new PolygonOptions() //Science Engineering Labs
-                .add(new LatLng(41.870756, -87.649418))
-                .add(new LatLng(41.870061, -87.649394))
-                .add(new LatLng(41.870098, -87.647349))
-                .add(new LatLng(41.870785, -87.647387))
+        Polygon sele = mMap.addPolygon(new PolygonOptions() //Science Engineering Labs
+                .add(new LatLng(41.870757, -87.648648))
+                .add(new LatLng(41.870773, -87.647382))
+                .add(new LatLng(41.870126, -87.647350))
+                .add(new LatLng(41.870110, -87.648584))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
+
+        Polygon selw = mMap.addPolygon(new PolygonOptions() //Science Engineering Labs
+                .add(new LatLng(41.870099, -87.648755))
+                .add(new LatLng(41.870075, -87.649409))
+                .add(new LatLng(41.870762, -87.649409))
+                .add(new LatLng(41.870762, -87.648770))
+                .fillColor(polygonFillColor)
+                .strokeColor(polygonStrokeColor)
+        );
+        Polygon quad = mMap.addPolygon(new PolygonOptions() //Science Engineering Labs
+                .add(new LatLng(41.872117, -87.649531))
+                .add(new LatLng(41.872109, -87.648946))
+                .add(new LatLng(41.871670, -87.648967))
+                .add(new LatLng(41.871654, -87.649526))
                 .fillColor(polygonFillColor)
                 .strokeColor(polygonStrokeColor)
         );

@@ -17,6 +17,7 @@ public class locationCheck {
 
     // Initializes the Hashmap of Places of Interests for location checking
     public static void initMap() {
+
         LatLngBounds SCEBounds = new LatLngBounds(
                 new LatLng(41.871302, -87.648222),
                 new LatLng(41.872526, -87.647667)
