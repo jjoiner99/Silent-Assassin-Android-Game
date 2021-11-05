@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.cs440project.Quests.Quest;
 import com.example.cs440project.firebase.Fire;
+
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,34 +24,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Objects.requireNonNull(getSupportActionBar()).hide(); // hide the title bar
         setContentView(R.layout.activity_main);
-//        Init database should only be called if we decide to change the long and lat of an area but not onCreate
-//        Fire.initDatabase();
     }
 
     public void handleStartBtn(View view) {
-        getPermission();
+        getRoleScreen();
     }
 
-    private void getPermission() {
-        int LOCATION_REQUEST = 1;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
-        } else {
-            Intent startMapScreen = new Intent(MainActivity.this, MapsActivity.class);
-            MainActivity.this.startActivity(startMapScreen);
-        }
-    }
+    private void getRoleScreen(){
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            Intent startMapScreen = new Intent(MainActivity.this, MapsActivity.class);
-            MainActivity.this.startActivity(startMapScreen);
-        } else {
-            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-        }
+        Intent startRoleScreen = new Intent(MainActivity.this, com.example.cs440project.RoleActivity.class);
+        MainActivity.this.startActivity(startRoleScreen);
     }
 
     @Override

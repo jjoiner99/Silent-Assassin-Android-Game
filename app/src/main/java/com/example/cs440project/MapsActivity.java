@@ -4,16 +4,23 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.renderscript.Sampler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.cs440project.databinding.ActivityMapsBinding;
+import com.example.cs440project.firebase.Fire;
 import com.example.cs440project.interestPoints.InterestPoints;
 import com.example.cs440project.locationCheck.locationCheck;
 import com.example.cs440project.mapPreference.MapPreference;
+import com.example.cs440project.user.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -22,6 +29,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,23 +38,40 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener {
 
+    private TextView score;
     private FusedLocationProviderClient FSL;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private Location currentLocation;
     private double lat;
     private double lon;
+    private User user = new User();
+    private Button customButton;
+    int loc;
+    String DailyBounty;
+    boolean visible = false;
+    boolean dailyRedeemed = false;
+
+
+    ArrayList<Integer> userQuestId = new ArrayList<Integer>();
+    ArrayList<String> userQuestKey = new ArrayList<String>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getDailyBounty();
         super.onCreate(savedInstanceState);
 
         com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
@@ -58,16 +84,40 @@ public class MapsActivity extends FragmentActivity
         createLocationRequest();
         createLocationCallback();
         FSL = LocationServices.getFusedLocationProviderClient(this);
+        Log.i("ID", user.getID());
+        score = findViewById(R.id.scoreText);
+        updateScore();
+        customButton = findViewById(R.id.customButton);
+        customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String curLoc = locationCheck.checkLocation(lat, lon);
+                // If we are in a user quest
+                if(userQuestKey.contains(curLoc)){
+                    // Remove daily quest from the list
+                    userQuestKey.remove(curLoc);
+                    Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+                    user.addPoints(10);
+                } else{
+                    Log.i("Points", "Added 40 Points");
+                    Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
+                    user.addPoints(40);
+                    dailyRedeemed = true;
+                }
+                customButton.setVisibility(View.INVISIBLE);
+                updateScore();
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-
         MapPreference.setMapStyle(googleMap, MapsActivity.this); // Set blue style to mMap
         InterestPoints.drawBuildingPolygons(googleMap); // Draws all of the buildings
         InterestPoints.drawUicBounds(googleMap); // Draws stroke around uic block
-
+        Fire.fetchMultiPlayLocation(googleMap);
         // When map finished loading, prevents the error
         googleMap.setOnMapLoadedCallback(MapPreference.setCamera(googleMap));
         googleMap.setMyLocationEnabled(true);
@@ -86,11 +136,26 @@ public class MapsActivity extends FragmentActivity
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(this, "Latitude: " + location.getLatitude() + " Longitude: " + location.getLongitude(), Toast.LENGTH_LONG).show();
     }
+
+
+    public void onPlayersToggleClick(View v){
+        ArrayList<Marker> mark = Fire.getMarkers();
+
+        if(((ToggleButton) v).isChecked()){
+            for(Marker m : mark){
+                m.setVisible(false);
+            }
+        }
+        else{
+            for(Marker m : mark){
+                m.setVisible(true);
+            }
+        }
+    }
     
     @SuppressLint("MissingPermission")
     public void isUserInPOI() {
         String TAG = "Maps Activity";
-        Log.i(TAG, "Clicked ");
         FSL.getLastLocation().addOnSuccessListener(this, location -> {
             if (location != null) {
                 locationCheck.check(this, location.getLatitude(), location.getLongitude());
@@ -107,17 +172,12 @@ public class MapsActivity extends FragmentActivity
                 super.onLocationResult(locationResult);
                 currentLocation = locationResult.getLastLocation();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference totalRef = database.getReference("CompleteUserData");
-                DatabaseReference singleRef = database.getReference("CoordUserData");
+                DatabaseReference singleRef = database.getInstance().getReference();
                 lat = currentLocation.getLatitude();
                 lon = currentLocation.getLongitude();
-                HashMap<String, HashMap<String, Double>> user = new HashMap<>();
-                HashMap<String, Double> data = new HashMap<>();
-                data.put("Latitude", lat);
-                data.put("Longitude", lon);
-                user.put("Coordinates", data);
-                totalRef.setValue(currentLocation);
-                singleRef.setValue(user);
+                user.setLat(lat);
+                user.setLon(lon);
+                singleRef.child("Users").child(user.getUsername()).setValue(user);
                 grabData();
             }
         };
@@ -139,24 +199,94 @@ public class MapsActivity extends FragmentActivity
     }
 
     private void grabData() {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("CoordUserData");
+        String curLoc = locationCheck.checkLocation(lat, lon);
+        Log.i("current", curLoc);
+        if (curLoc == DailyBounty && dailyRedeemed == false || userQuestKey.contains(curLoc)) {
+            Log.i("Button", "Turning visible");
+            customButton.setVisibility(View.VISIBLE);
+            visible = true;
+        } else if (curLoc != DailyBounty && visible) {
+            Log.i("Button", "Turning invisible");
+            customButton.setVisibility(View.INVISIBLE);
+            visible = false;
+        }
+    }
 
+    // populate userQuestsKeys list with non repeating non dailybounty quests
+    public void generateRandomQuests(int numQuests){
+        Random randomGenerator = new Random();
+        while (userQuestId.size() < numQuests) {
+
+            // Random Num between 1 - 8
+            int randomId = randomGenerator .nextInt(8);
+            String questKey = getDailyLocation(randomId+1);
+
+            // No duplicates!
+            if (!userQuestId.contains(randomId)) {
+                // Can't be the daily!
+                if (DailyBounty == questKey){
+                    Log.i("DailyQuest", "Couldn't add daily Quest");
+                } else {
+                    // Add to list
+                    Log.i("DailyQuest", "Adding " + questKey);
+                    userQuestId.add(randomId);
+                    userQuestKey.add(questKey);
+                }
+            }
+        }
+    }
+
+    public void getDailyBounty() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Double lat = ds.child("Latitude").getValue(Double.class);
-                    Double lon = ds.child("Longitude").getValue(Double.class);
-                    Log.i("DataRet", "Latitude: " + lat + " Longitude: " + lon);
-                }
+                // Loc = the id of daily location
+                loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
+                DailyBounty = getDailyLocation(loc);
+                Log.i("DailyQuest", "Daily Bounty = " + DailyBounty);
+
+                // Generate 4 quests for the user
+                generateRandomQuests(4);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.i("Retrieve", "Read failed");
+                Log.i("DailyQuest", "Couldn't get Quest");
             }
         });
+    }
+
+    public String getDailyLocation(int locationID) {
+        switch (locationID){
+            case 1:
+                return "ARC";
+            case 2:
+                return "BSB";
+            case 3:
+                return "CirclePark";
+            case 4:
+                return"Library";
+            case 5:
+                return "Quad";
+            case 6:
+                return "SCE";
+            case 7:
+                return "SELE";
+            case 8:
+                return "SELW";
+            default:
+                return "";
+        }
+    }
+
+    // TODO Get place where the bounty assigned is in
+    public String getBounty(int bounty) {
+        return "";
+    }
+
+    public void updateScore() {
+        score.setText(String.valueOf(user.getPoints()));
     }
 
 }
