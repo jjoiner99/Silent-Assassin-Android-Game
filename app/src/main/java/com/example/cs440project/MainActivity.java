@@ -27,29 +27,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleStartBtn(View view) {
-        getPermission();
+        getRoleScreen();
     }
 
-    private void getPermission() {
-        int LOCATION_REQUEST = 1;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
-        } else {
-            Intent startMapScreen = new Intent(MainActivity.this, MapsActivity.class);
-            MainActivity.this.startActivity(startMapScreen);
-        }
-    }
+    private void getRoleScreen(){
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            Intent startMapScreen = new Intent(MainActivity.this, MapsActivity.class);
-            MainActivity.this.startActivity(startMapScreen);
-        } else {
-            Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-        }
+        Intent startRoleScreen = new Intent(MainActivity.this, com.example.cs440project.RoleActivity.class);
+        MainActivity.this.startActivity(startRoleScreen);
     }
 
     @Override
