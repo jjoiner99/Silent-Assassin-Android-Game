@@ -1,13 +1,19 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.renderscript.Sampler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -71,6 +77,14 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Gets the username and role from previous intent
+        Intent i = getIntent();
+        user.setUsername(i.getStringExtra("username"));
+        Log.i("user", user.getUsername());
+        user.setRole(i.getIntExtra("role", 0));
+        Log.i("user", Integer.toString(user.getRole()));
+
+        // Retrieve the latest bounty
         getDailyBounty();
         super.onCreate(savedInstanceState);
 
@@ -124,6 +138,7 @@ public class MapsActivity extends FragmentActivity
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
         startLocationUpdates();
+        showQuests(findViewById(R.id.map));
     }
 
     @Override
@@ -280,13 +295,30 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
-    // TODO Get place where the bounty assigned is in
-    public String getBounty(int bounty) {
-        return "";
-    }
-
     public void updateScore() {
         score.setText(String.valueOf(user.getPoints()));
+    }
+
+    // Function to show the list of quests an explorer can go to
+    public void showQuests(View view) {
+        // Inflate the popup window layout
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popView = inflater.inflate(R.layout.pop_up, null);
+
+        // Create pop up window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        final PopupWindow popup = new PopupWindow(popView, width, height, true);
+        popup.setElevation(20);
+
+        // Show popup
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // Dismiss the popup when touched
+        popView.setOnTouchListener((view1, motionEvent) -> {
+            popup.dismiss();
+            return true;
+        });
     }
 
 }
