@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class User {
     private String username;
-    private int role;
+    private int role; // 0 = Explorer, 1 = Assassin
     private static User instance = null;
     private double lon;
     private double lat;

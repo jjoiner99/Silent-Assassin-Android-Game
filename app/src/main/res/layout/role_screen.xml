@@ -9,6 +9,21 @@
     tools:context=".RoleActivity">
 
     <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:textColor="#FFFEFE"
+        android:textColorHint="#FFFFFF"
+        android:textSize="25dp"
+        android:padding="10dp"
+        android:background="@color/purple_500"
+        app:layout_constraintBottom_toTopOf="@+id/editText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/roleTextView" />
+
+    <TextView
         android:id="@+id/roleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,79 +34,35 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.122" />
 
     <EditText
         android:id="@+id/editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="278dp"
+        android:layout_width="143dp"
+        android:layout_height="70dp"
+        android:background="#0E1627"
         android:focusable="true"
-        android:hint="Enter Name"
+        android:hint="Enter one word Username"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+        android:inputType="textFilter"
         android:minHeight="48dp"
+        android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textColorHighlight="#ff7eff15"
         android:textColorHint="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/roleTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="198dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/roleTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="144dp"
-        android:text="Attempts Left:"
-        android:textColor="#F8F8F8"
-        android:textColorHint="#FFFFFF"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/roleTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText2" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="144dp"
-        android:text="New Text"
-        android:textColor="#FFFEFE"
-        android:textColorHint="#FFFFFF"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/roleTextView"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/editText2" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.633" />
 
     <Button
         android:id="@+id/assasssinBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="114dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="236dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginEnd="44dp"
         android:onClick="handleAssassinBtn"
         android:text="Assassin"
         app:layout_constraintEnd_toEndOf="parent"
@@ -101,9 +72,8 @@
         android:id="@+id/explorerBtn"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="114dp"
-        android:layout_marginBottom="236dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="400dp"
         android:onClick="handleExplorerBtn"
         android:text="Explorer"
         app:layout_constraintStart_toStartOf="parent"

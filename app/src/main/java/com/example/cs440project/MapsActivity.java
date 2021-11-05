@@ -1,13 +1,19 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.renderscript.Sampler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -63,6 +69,7 @@ public class MapsActivity extends FragmentActivity
     String DailyBounty;
     boolean visible = false;
     boolean dailyRedeemed = false;
+    private TextView ppTV; // Popup TextView
 
 
     ArrayList<Integer> userQuestId = new ArrayList<Integer>();
@@ -71,8 +78,17 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Gets the username and role from previous intent
+        Intent i = getIntent();
+        user.setUsername(i.getStringExtra("username"));
+        Log.i("user", user.getUsername());
+        user.setRole(i.getIntExtra("role", 0));
+        Log.i("user", Integer.toString(user.getRole()));
+
         getDailyBounty();
+        // Retrieve the latest bounty
         super.onCreate(savedInstanceState);
+
 
         com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -88,26 +104,23 @@ public class MapsActivity extends FragmentActivity
         score = findViewById(R.id.scoreText);
         updateScore();
         customButton = findViewById(R.id.customButton);
-        customButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        customButton.setOnClickListener(v -> {
 
-                String curLoc = locationCheck.checkLocation(lat, lon);
-                // If we are in a user quest
-                if(userQuestKey.contains(curLoc)){
-                    // Remove daily quest from the list
-                    userQuestKey.remove(curLoc);
-                    Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
-                    user.addPoints(10);
-                } else{
-                    Log.i("Points", "Added 40 Points");
-                    Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
-                    user.addPoints(40);
-                    dailyRedeemed = true;
-                }
-                customButton.setVisibility(View.INVISIBLE);
-                updateScore();
+            String curLoc = locationCheck.checkLocation(lat, lon);
+            // If we are in a user quest
+            if(userQuestKey.contains(curLoc)){
+                // Remove daily quest from the list
+                userQuestKey.remove(curLoc);
+                Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+                user.addPoints(10);
+            } else{
+                Log.i("Points", "Added 40 Points");
+                Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
+                user.addPoints(40);
+                dailyRedeemed = true;
             }
+            customButton.setVisibility(View.INVISIBLE);
+            updateScore();
         });
     }
 
@@ -124,6 +137,7 @@ public class MapsActivity extends FragmentActivity
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
         startLocationUpdates();
+        showQuests(findViewById(R.id.map));
     }
 
     @Override
@@ -245,9 +259,6 @@ public class MapsActivity extends FragmentActivity
                 loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
                 DailyBounty = getDailyLocation(loc);
                 Log.i("DailyQuest", "Daily Bounty = " + DailyBounty);
-
-                // Generate 4 quests for the user
-                generateRandomQuests(4);
             }
 
             @Override
@@ -280,13 +291,45 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
-    // TODO Get place where the bounty assigned is in
-    public String getBounty(int bounty) {
-        return "";
-    }
-
     public void updateScore() {
         score.setText(String.valueOf(user.getPoints()));
+    }
+
+    // Function to show the list of quests an explorer can go to
+    public void showQuests(View view) {
+        // Inflate the popup window layout
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popView = inflater.inflate(R.layout.pop_up, null);
+
+        // Create pop up window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        final PopupWindow popup = new PopupWindow(popView, width, height, true);
+        popup.setElevation(20);
+
+        generateRandomQuests(4);
+        StringBuilder builder = new StringBuilder();
+        builder.append("Quests Available:\n");
+        for (int i = 0; i < userQuestKey.size(); i++) {
+            if (i != userQuestKey.size()-1) {
+                builder.append(userQuestKey.get(i) + "\n");
+            } else {
+                builder.append(userQuestKey.get(i));
+            }
+        }
+        Log.i("quests", builder.toString());
+
+        // Show popup
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        ppTV = popup.getContentView().findViewById(R.id.popupTextView);
+        ppTV.setText(builder.toString());
+
+        // Dismiss the popup when touched
+        popView.setOnTouchListener((view1, motionEvent) -> {
+            popup.dismiss();
+            return true;
+        });
     }
 
 }

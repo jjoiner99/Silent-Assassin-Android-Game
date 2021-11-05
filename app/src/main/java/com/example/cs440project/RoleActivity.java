@@ -9,6 +9,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,10 @@ public class RoleActivity extends AppCompatActivity {
     EditText ed1,ed2;
     TextView tx1;
     int counter = 3;
+    private String username;
+    private int role;
+    private int EXPLORER = 0;
+    private int ASSASSIN = 1;
 
 
     public void onCreate(Bundle savedInstanceState){
@@ -31,56 +36,47 @@ public class RoleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Objects.requireNonNull(getSupportActionBar()).hide(); // hide the title bar
         setContentView(R.layout.role_screen);
-        tx1 = (TextView)findViewById(R.id.textView3);
+        tx1 = findViewById(R.id.textView3);
         tx1.setVisibility(View.GONE);
 
     }
 
     public void handleExplorerBtn(View view) {
 
-        b1 = (Button)findViewById(R.id.assasssinBtn);
-        ed1 = (EditText)findViewById(R.id.editText);
-        ed2 = (EditText)findViewById(R.id.editText2);
+        b1 = findViewById(R.id.assasssinBtn);
+        ed1 = findViewById(R.id.editText);
 
-        b2 =  (Button)findViewById(R.id.explorerBtn);
-        tx1 = (TextView)findViewById(R.id.textView3);
+        b2 =  findViewById(R.id.explorerBtn);
         tx1.setVisibility(View.GONE);
 
-        if(ed1.getText().toString().equals("admin") && ed2.getText().toString().equals("admin")){
-            getPermission();
+        if(ed1.getText().toString().matches("")){
+            Log.i("Username", ed1.getText().toString());
+            tx1.setText("Please enter a name");
+            tx1.setVisibility(View.VISIBLE);
         }
         else{
-            tx1.setVisibility(View.VISIBLE);
-            counter--;
-            tx1.setText(Integer.toString(counter));
-            if (counter == 0) {
-                b1.setEnabled(false);
-                b2.setEnabled(false);
-            }
+            username = ed1.getText().toString();
+            role = EXPLORER;
+            getPermission();
         }
     }
 
     public void handleAssassinBtn(View view) {
 
-        b1 = (Button)findViewById(R.id.assasssinBtn);
-        ed1 = (EditText)findViewById(R.id.editText);
-        ed2 = (EditText)findViewById(R.id.editText2);
+        b1 = findViewById(R.id.assasssinBtn);
+        ed1 = findViewById(R.id.editText);
 
-        b2 =  (Button)findViewById(R.id.explorerBtn);
-        tx1 = (TextView)findViewById(R.id.textView3);
+        b2 =  findViewById(R.id.explorerBtn);
         tx1.setVisibility(View.GONE);
 
-        if(ed1.getText().toString().equals("admin") && ed2.getText().toString().equals("admin")){
-            getPermission();
+        if(ed1.getText().toString().matches("")){
+            tx1.setText("Please enter a name");
+            tx1.setVisibility(View.VISIBLE);
         }
         else{
-            tx1.setVisibility(View.VISIBLE);
-            counter--;
-            tx1.setText(Integer.toString(counter));
-            if (counter == 0) {
-                b1.setEnabled(false);
-                b2.setEnabled(false);
-            }
+            role = ASSASSIN;
+            username = ed1.getText().toString();
+            getPermission();
         }
     }
 
@@ -91,6 +87,8 @@ public class RoleActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
         } else {
             Intent startMapScreen = new Intent(RoleActivity.this, MapsActivity.class);
+            startMapScreen.putExtra("role", role);
+            startMapScreen.putExtra("username", username);
             RoleActivity.this.startActivity(startMapScreen);
         }
     }
@@ -100,6 +98,8 @@ public class RoleActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             Intent startMapScreen = new Intent(RoleActivity.this, MapsActivity.class);
+            startMapScreen.putExtra("role", role);
+            startMapScreen.putExtra("username", username);
             RoleActivity.this.startActivity(startMapScreen);
         } else {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
