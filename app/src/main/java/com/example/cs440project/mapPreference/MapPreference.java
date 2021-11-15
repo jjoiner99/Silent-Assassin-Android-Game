@@ -10,6 +10,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+// Map Preference dictates the style of the map
 public class MapPreference {
     public static GoogleMap.OnMapLoadedCallback setCamera(GoogleMap mMap){
         mMap.setLatLngBoundsForCameraTarget(InterestPoints.uicBounds);

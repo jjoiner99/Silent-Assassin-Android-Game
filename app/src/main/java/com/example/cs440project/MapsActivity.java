@@ -75,7 +75,6 @@ public class MapsActivity extends FragmentActivity
     ArrayList<Integer> userQuestId = new ArrayList<Integer>();
     ArrayList<String> userQuestKey = new ArrayList<String>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Gets the username and role from previous intent
@@ -212,6 +211,7 @@ public class MapsActivity extends FragmentActivity
                 Looper.getMainLooper());
     }
 
+    // Setting "collect bounty btn" to visible/invisible
     private void grabData() {
         String curLoc = locationCheck.checkLocation(lat, lon);
         Log.i("current", curLoc);
@@ -250,6 +250,7 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    // Set Daily Bounty to fetched firebase data
     public void getDailyBounty() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
         ref.addValueEventListener(new ValueEventListener() {

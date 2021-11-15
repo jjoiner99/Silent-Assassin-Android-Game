@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+// Here is where Interest Points are defined and drawn
 // Find coordinates using https://www.latlong.net/
 // Map styled with https://mapstyle.withgoogle.com/
 public class InterestPoints {
