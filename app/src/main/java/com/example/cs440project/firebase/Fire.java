@@ -1,3 +1,5 @@
+
+
 package com.example.cs440project.firebase;
 
 import android.util.Log;
@@ -137,15 +139,15 @@ public class Fire {
     // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Players");
+        DatabaseReference myRef = database.getReference("Users");
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Double lon = ds.child("longitude").getValue(Double.class);
-                    Double lat = ds.child("latitude").getValue(Double.class);
+                    Double lon = ds.child("lon").getValue(Double.class);
+                    Double lat = ds.child("lat").getValue(Double.class);
                     String username = ds.child("username").getValue(String.class);
                     Log.i("Players", "Lat: " + lat + " Lon: " + lon);
                     LatLng coord = new LatLng(lat, lon);
