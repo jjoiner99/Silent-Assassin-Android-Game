@@ -89,19 +89,6 @@ public class Fire {
         Log.i(TAG, "Successfully initialized database");
     }
 
-    // TODO - send a users coordinates to firebase on an interval
-    public static void sendUserLocation() {
-    }
-
-    // TODO - check if a users location is inside an interest point boundary
-    public static boolean isUserInPOI() {
-        return false;
-    }
-
-    public static void initQuestTable(){
-
-    }
-
     public static void initLogsTable(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference logsRef = database.getReference("Logs").child("Config");
@@ -136,7 +123,7 @@ public class Fire {
     public static ArrayList<Marker> getMarkers() {return markers; }
 
 
-    // TODO - fetch other players coodinates
+    // TODO - fetch other players coordinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users");
