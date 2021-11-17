@@ -103,24 +103,45 @@ public class MapsActivity extends FragmentActivity
         score = findViewById(R.id.scoreText);
         updateScore();
         customButton = findViewById(R.id.customButton);
-        customButton.setOnClickListener(v -> {
-
-            String curLoc = locationCheck.checkLocation(lat, lon);
-            // If we are in a user quest
-            if(userQuestKey.contains(curLoc)){
-                // Remove daily quest from the list
-                userQuestKey.remove(curLoc);
-                Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
-                user.addPoints(10);
-            } else{
-                Log.i("Points", "Added 40 Points");
-                Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
-                user.addPoints(40);
-                dailyRedeemed = true;
+        if (user.getRole() == 0) {
+            customButton.setText("Collect Bounty");
+        } else {
+            customButton.setText("Search for Explorers");
+        }
+        customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (user.getRole() == 0) {
+                    collectBounty();
+                } else {
+                    searchExplorers();
+                }
             }
-            customButton.setVisibility(View.INVISIBLE);
-            updateScore();
         });
+    }
+
+    public void searchExplorers() {
+        String curLoc = locationCheck.checkLocation(lat, lon);
+        Toast.makeText(this, "Searching for explorers", Toast.LENGTH_SHORT).show();
+        // TODO Check for multiple people that are explorers
+    }
+
+    public void collectBounty() {
+        String curLoc = locationCheck.checkLocation(lat, lon);
+        // If we are in a user quest
+        if(userQuestKey.contains(curLoc)){
+            // Remove daily quest from the list
+            userQuestKey.remove(curLoc);
+            Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+            user.addPoints(10);
+        } else{
+            Log.i("Points", "Added 40 Points");
+            Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
+            user.addPoints(40);
+            dailyRedeemed = true;
+        }
+        customButton.setVisibility(View.INVISIBLE);
+        updateScore();
     }
 
     @SuppressLint("MissingPermission")
@@ -310,7 +331,11 @@ public class MapsActivity extends FragmentActivity
 
         generateRandomQuests(4);
         StringBuilder builder = new StringBuilder();
-        builder.append("Quests Available:\n");
+        if (user.getRole() == 0) {
+            builder.append("Quests Available:\n");
+        } else {
+            builder.append("Explorers have bounties in:\n");
+        }
         for (int i = 0; i < userQuestKey.size(); i++) {
             if (i != userQuestKey.size()-1) {
                 builder.append(userQuestKey.get(i) + "\n");
