@@ -126,6 +126,12 @@ public class MapsActivity extends FragmentActivity
                 }
             }
         });
+
+        // Button for leaderboards
+        leaderboardButton = findViewById(R.id.leaderboard_button);
+        leaderboardButton.setOnClickListener(v -> {
+            showLeaderboard(leaderboard, findViewById(R.id.map));
+        });
     }
 
     public void searchExplorers() {
@@ -224,6 +230,7 @@ public class MapsActivity extends FragmentActivity
                 user.setLon(lon);
                 singleRef.child("Users").child(user.getUsername()).setValue(user);
                 grabData();
+                getLeaderboard();
             }
         };
     }
