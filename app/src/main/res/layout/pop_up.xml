@@ -2,16 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:background="@color/popup">
+    android:background="#1D2C4D">
 
     <TextView
         android:id="@+id/popupTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_margin="30dp"
-        android:textSize="22sp"
-        android:textColor="@color/black"
-        android:text="POPUP"/>
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:padding="15dp"
+        android:text="POPUP"
+        android:elevation="10dp"
+        android:textColor="@color/white"
+        android:textSize="24dp" />
 
 </RelativeLayout>

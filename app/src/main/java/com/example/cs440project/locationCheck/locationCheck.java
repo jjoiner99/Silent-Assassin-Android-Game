@@ -9,12 +9,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class locationCheck {
     private static HashMap<String, LatLngBounds> places = new HashMap<>();
-
+    private static String TAG = "LocationCheck";
     // Initializes the Hashmap of Places of Interests for location checking
     public static void initMap() {
 
@@ -73,21 +72,23 @@ public class locationCheck {
     }
 
     // Check the current user location if they are in a POI
-    public static void check(Activity context, double lat, double lon) {
+    public static String check(Activity context, double lat, double lon) {
+        // Populate Hashmap of bounds
         initMap();
+
+        // Get current location
         LatLng current = new LatLng(lat, lon);
         for (Map.Entry place : getMap().entrySet()) {
-            String POI = "You are in the " + (String) place.getKey();
+            String POI =(String) place.getKey();
             LatLngBounds b = (LatLngBounds)  place.getValue();
-            Log.i("Check", "Latitude: " + current.latitude + " Longitude: " + current.longitude);
+            Log.i(TAG, "Latitude: " + current.latitude + " Longitude: " + current.longitude);
             if (b.contains(current)) {
-                Toast.makeText(context, POI, Toast.LENGTH_LONG).show();
-                Log.i("Location Check", POI);
-                checkForOthers((String) place.getKey(), b);
-                return;
+                Log.i(TAG, POI);
+                // checkForOthers((String) place.getKey(), b); //todo this isn't working
+                return POI;
             }
         }
-        Toast.makeText(context, "You are not in a POI", Toast.LENGTH_SHORT).show();
+        return null;
     }
 
     public static String checkLocation(double lat, double lon) {
@@ -102,13 +103,14 @@ public class locationCheck {
         return "";
     }
 
+    // Return a hashmap of other players
     public static void checkForOthers(String place, LatLngBounds b){ //Function to check if other players are in the same POI
         HashMap<String, LatLng> mult = Fire.getMultiPlayerCoord();
         //HashMap<String, LatLng> mult = new HashMap<>();
         //mult.put("player2", new LatLng(41.8719, -87.6479));
         //Iterator iter = mult.entrySet().iterator();
 
-        Log.i("Players", "Players: " + mult);
+        Log.i("Check", "Players: " + mult);
 
         for(Map.Entry elem : mult.entrySet()){//Checking each additional player
             String key = (String)elem.getKey();

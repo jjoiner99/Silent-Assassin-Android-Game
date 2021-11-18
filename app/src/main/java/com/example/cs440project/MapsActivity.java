@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
-import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -36,19 +34,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity
@@ -56,7 +48,9 @@ public class MapsActivity extends FragmentActivity
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener {
 
+    String TAG = "Maps Activity";
     private TextView score;
+    private TextView currentLocationText;
     private FusedLocationProviderClient FSL;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -64,7 +58,8 @@ public class MapsActivity extends FragmentActivity
     private double lat;
     private double lon;
     private User user = new User();
-    private Button customButton;
+    private Button customButton; //todo rename customButton
+    private Button killExplorerButton;
     int loc;
     String DailyBounty;
     boolean visible = false;
@@ -88,7 +83,6 @@ public class MapsActivity extends FragmentActivity
         // Retrieve the latest bounty
         super.onCreate(savedInstanceState);
 
-
         com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -103,6 +97,8 @@ public class MapsActivity extends FragmentActivity
         score = findViewById(R.id.scoreText);
         updateScore();
         customButton = findViewById(R.id.customButton);
+        currentLocationText = findViewById(R.id.currentLocationText);
+        currentLocationText.setVisibility(View.INVISIBLE);
         customButton.setOnClickListener(v -> {
 
             String curLoc = locationCheck.checkLocation(lat, lon);
@@ -121,6 +117,17 @@ public class MapsActivity extends FragmentActivity
             customButton.setVisibility(View.INVISIBLE);
             updateScore();
         });
+
+
+        // Setup kill Explorer Btn
+        killExplorerButton = findViewById(R.id.killExplorerButton);
+        killExplorerButton.setVisibility(View.INVISIBLE);
+        killExplorerButton.setOnClickListener(v -> {
+            // todo set visibility when in POI & there are other explorers & current user is a hunter
+                killExplorerButton.setVisibility(v.INVISIBLE);
+
+        });
+
     }
 
     @SuppressLint("MissingPermission")
@@ -141,7 +148,7 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public boolean onMyLocationButtonClick() {
-        isUserInPOI();
+        handleGetLocationButton();
         return false;
     }
 
@@ -165,17 +172,42 @@ public class MapsActivity extends FragmentActivity
             }
         }
     }
-    
+
+
     @SuppressLint("MissingPermission")
-    public void isUserInPOI() {
-        String TAG = "Maps Activity";
+    public void handleGetLocationButton() {
         FSL.getLastLocation().addOnSuccessListener(this, location -> {
             if (location != null) {
                 locationCheck.check(this, location.getLatitude(), location.getLongitude());
             } else {
-                Log.i("location", "Location returned null");
+                Log.i(TAG, "Location returned null");
             }
         });
+    }
+
+    public boolean isInPOI(){
+        
+        String checkLocationResult = locationCheck.check(this, lat,lon);
+        int role = user.getRole();
+
+        // User is in a POI
+        if(checkLocationResult != null){
+            currentLocationText.setText("Welcome to "+checkLocationResult);
+            currentLocationText.setVisibility(View.VISIBLE);
+
+            // user is a hunter
+            if(role == 1){
+                killExplorerButton.setVisibility(View.VISIBLE);
+            }
+            return true;
+        }
+        // Reset TextView
+        currentLocationText.setText("");
+        currentLocationText.setVisibility(View.INVISIBLE);
+        killExplorerButton.setVisibility(View.INVISIBLE);
+
+        // User is not in a POI
+        return false;
     }
 
     private void createLocationCallback() {
@@ -192,6 +224,7 @@ public class MapsActivity extends FragmentActivity
                 user.setLon(lon);
                 singleRef.child("Users").child(user.getUsername()).setValue(user);
                 grabData();
+                isInPOI();
             }
         };
     }
@@ -217,7 +250,12 @@ public class MapsActivity extends FragmentActivity
         Log.i("current", curLoc);
         if (curLoc == DailyBounty && dailyRedeemed == false || userQuestKey.contains(curLoc)) {
             Log.i("Button", "Turning visible");
-            customButton.setVisibility(View.VISIBLE);
+
+            // If the user is a explorer display the collect bounty button
+            if(user.getRole() == 0){
+                customButton.setVisibility(View.VISIBLE);
+            }
+
             visible = true;
         } else if (curLoc != DailyBounty && visible) {
             Log.i("Button", "Turning invisible");

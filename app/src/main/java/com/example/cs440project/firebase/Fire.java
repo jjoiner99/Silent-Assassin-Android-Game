@@ -154,6 +154,19 @@ public class Fire {
                     multiPlayerCoord.put(username, coord);
                 }
 
+                // First render
+                if(markers.isEmpty()){
+                    drawMarkers();
+                } else{
+                    // Update positions of players as they move
+                    deleteMarkers();
+                    drawMarkers();
+                }
+
+            }
+
+            // Draws marker for each player
+            private void drawMarkers(){
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
                     // Print
                     Log.d(TAG, entry.getKey() + " : " + entry.getValue());
@@ -161,6 +174,13 @@ public class Fire {
                 }
             }
 
+            // Delete all markers
+            private void deleteMarkers(){
+                for (Marker m : markers) {
+                    m.remove();
+                }
+                markers.clear();
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
