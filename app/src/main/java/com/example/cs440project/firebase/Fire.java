@@ -4,6 +4,7 @@ package com.example.cs440project.firebase;
 
 import android.util.Log;
 
+import com.example.cs440project.user.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -26,6 +27,7 @@ public class Fire {
     private static final HashMap<String, LatLngBounds> places = new HashMap<>();
     private static final HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
     private static final ArrayList<Marker> markers = new ArrayList<>();
+    private static final ArrayList<User> users = new ArrayList<>();
 
     // Init database should only be called if we decide to change the long and lat of an area but not onCreate
     public static void initDatabase() {
@@ -122,6 +124,10 @@ public class Fire {
 
     public static ArrayList<Marker> getMarkers() {return markers; }
 
+    public static ArrayList<User> getUsers() {return users; }
+
+    public static HashMap<String, LatLngBounds> getPlaces(){return places;}
+
 
     // TODO - fetch other players coordinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
@@ -139,6 +145,43 @@ public class Fire {
                     Log.i("Players", "Lat: " + lat + " Lon: " + lon);
                     LatLng coord = new LatLng(lat, lon);
                     multiPlayerCoord.put(username, coord);
+                }
+
+                for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
+                    // Print
+                    Log.d(TAG, entry.getKey() + " : " + entry.getValue());
+                    markers.add(mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey())));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        };
+        myRef.addValueEventListener(postListener);
+    }
+
+    public static void fetchMultiPlayLocation2(GoogleMap mMap) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users");
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User multUser = new User();
+                    Double lon = ds.child("longitude").getValue(Double.class);
+                    Double lat = ds.child("latitude").getValue(Double.class);
+                    String username = ds.child("username").getValue(String.class);
+                    multUser.setLat(lat);
+                    multUser.setLon(lon);
+                    multUser.setRole(ds.child("role").getValue(Integer.class));
+                    multUser.setUsername(username);
+                    Log.i("Players", "Lat: " + lat + " Lon: " + lon);
+                    users.add(multUser);
                 }
 
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
