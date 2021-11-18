@@ -4,11 +4,15 @@ package com.example.cs440project.firebase;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -131,7 +135,7 @@ public class Fire {
 
     public static ArrayList<Marker> getMarkers() {return markers; }
 
-    public static void fetchMultiPlayLocation(GoogleMap mMap) {
+    public static void fetchMultiPlayLocation(GoogleMap mMap, int isHunter) {
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -145,15 +149,16 @@ public class Fire {
                     multiPlayerCoord.put(username, coord);
                 }
 
-                // First render
-                if(markers.isEmpty()){
-                    drawMarkers();
-                } else{
-                    // Update positions of players as they move
-                    deleteMarkers();
-                    drawMarkers();
+                if(isHunter != 1) {
+                    // First render
+                    if (markers.isEmpty()) {
+                        drawMarkers();
+                    } else {
+                        // Update positions of players as they move
+                        deleteMarkers();
+                        drawMarkers();
+                    }
                 }
-
             }
 
             // Draws marker for each player
@@ -165,13 +170,7 @@ public class Fire {
                 }
             }
 
-            // Delete all markers
-            private void deleteMarkers(){
-                for (Marker m : markers) {
-                    m.remove();
-                }
-                markers.clear();
-            }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
@@ -179,5 +178,12 @@ public class Fire {
             }
         };
         usersRef.addValueEventListener(postListener);
+    }
+    // Delete all markers
+    public static void deleteMarkers(){
+        for (Marker m : markers) {
+            m.remove();
+        }
+        markers.clear();
     }
 }

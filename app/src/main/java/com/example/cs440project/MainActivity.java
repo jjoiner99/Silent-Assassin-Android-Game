@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getRoleScreen(){
-
         Intent startRoleScreen = new Intent(MainActivity.this, com.example.cs440project.RoleActivity.class);
         MainActivity.this.startActivity(startRoleScreen);
     }

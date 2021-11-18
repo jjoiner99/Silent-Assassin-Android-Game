@@ -101,7 +101,6 @@ public class MapsActivity extends FragmentActivity
         currentLocationText = findViewById(R.id.currentLocationText);
         currentLocationText.setVisibility(View.INVISIBLE);
         customButton.setOnClickListener(v -> {
-
             String curLoc = locationCheck.checkLocation(lat, lon);
             // If we are in a user quest
             if(userQuestKey.contains(curLoc)){
@@ -131,11 +130,14 @@ public class MapsActivity extends FragmentActivity
             Fire.killPlayer(playerKilled);
             showQuests(findViewById(R.id.map), true);
             user.addPoints(50);
-
-            // todo set visibility when in POI & there are other explorers & current user is a hunter
-                killExplorerButton.setVisibility(v.INVISIBLE);
+            updateScore();
+            killExplorerButton.setVisibility(v.INVISIBLE);
         });
+        if(user.getRole() == 1) {
+            // Hide view players
+            findViewById(R.id.toggleButton).setVisibility(View.INVISIBLE);
 
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -144,7 +146,7 @@ public class MapsActivity extends FragmentActivity
         MapPreference.setMapStyle(googleMap, MapsActivity.this); // Set blue style to mMap
         InterestPoints.drawBuildingPolygons(googleMap); // Draws all of the buildings
         InterestPoints.drawUicBounds(googleMap); // Draws stroke around uic block
-        Fire.fetchMultiPlayLocation(googleMap);
+        Fire.fetchMultiPlayLocation(googleMap, user.getRole());
         // When map finished loading, prevents the error
         googleMap.setOnMapLoadedCallback(MapPreference.setCamera(googleMap));
         googleMap.setMyLocationEnabled(true);
@@ -360,10 +362,13 @@ public class MapsActivity extends FragmentActivity
         popup.setElevation(20);
 
         StringBuilder builder = new StringBuilder();
+
         // Display a hunter kill dialog box
         if(hunterKill == true){
             builder.append(playerKilled + " was killed");
         }
+
+        // Display Quest dialog box
         else {
             generateRandomQuests(4);
             builder.append("Quests Available:\n");
