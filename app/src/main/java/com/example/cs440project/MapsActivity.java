@@ -1,6 +1,7 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.cs440project.databinding.ActivityMapsBinding;
 import com.example.cs440project.firebase.Fire;
 import com.example.cs440project.interestPoints.InterestPoints;
+import com.example.cs440project.leaderboardEntry.LeaderboardEntry;
 import com.example.cs440project.locationCheck.locationCheck;
 import com.example.cs440project.mapPreference.MapPreference;
 import com.example.cs440project.user.User;
@@ -33,6 +35,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,6 +44,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity
@@ -67,6 +74,8 @@ public class MapsActivity extends FragmentActivity
     boolean dailyRedeemed = false;
     private TextView ppTV; // Popup TextView
     private String playerKilled;
+    private Button leaderboardButton;
+    private ArrayList<LeaderboardEntry> leaderboard;
 
     ArrayList<Integer> userQuestId = new ArrayList<Integer>();
     ArrayList<String> userQuestKey = new ArrayList<String>();
@@ -76,9 +85,7 @@ public class MapsActivity extends FragmentActivity
         // Gets the username and role from previous intent
         Intent i = getIntent();
         user.setUsername(i.getStringExtra("username"));
-        Log.i("user", user.getUsername());
         user.setRole(i.getIntExtra("role", 0));
-        Log.i("user", Integer.toString(user.getRole()));
 
         getDailyBounty();
         // Retrieve the latest bounty
@@ -94,30 +101,28 @@ public class MapsActivity extends FragmentActivity
         createLocationRequest();
         createLocationCallback();
         FSL = LocationServices.getFusedLocationProviderClient(this);
-        Log.i("ID", user.getID());
         score = findViewById(R.id.scoreText);
-        updateScore();
         customButton = findViewById(R.id.customButton);
         currentLocationText = findViewById(R.id.currentLocationText);
         currentLocationText.setVisibility(View.INVISIBLE);
         customButton.setOnClickListener(v -> {
             String curLoc = locationCheck.checkLocation(lat, lon);
+
             // If we are in a user quest
             if(userQuestKey.contains(curLoc)){
                 // Remove daily quest from the list
                 userQuestKey.remove(curLoc);
                 Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
                 user.addPoints(10);
+                updateScore();
             } else{
                 Log.i("Points", "Added 40 Points");
                 Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
                 user.addPoints(40);
                 dailyRedeemed = true;
+                updateScore();
             }
-            customButton.setVisibility(View.INVISIBLE);
-            updateScore();
         });
-
 
         // Setup kill Explorer Btn
         killExplorerButton = findViewById(R.id.killExplorerButton);
@@ -138,7 +143,33 @@ public class MapsActivity extends FragmentActivity
             findViewById(R.id.toggleButton).setVisibility(View.INVISIBLE);
 
         }
+        // Button for leaderboards
+        leaderboardButton = findViewById(R.id.leaderboard_button);
+        leaderboardButton.setOnClickListener(v -> {
+            showLeaderboard(leaderboard, findViewById(R.id.map));
+        });
+
     }
+
+
+
+//    public void collectBounty() {
+//        String curLoc = locationCheck.checkLocation(lat, lon);
+//        // If we are in a user quest
+//        if(userQuestKey.contains(curLoc)){
+//            // Remove daily quest from the list
+//            userQuestKey.remove(curLoc);
+//            Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
+//            user.addPoints(10);
+//        } else{
+//            Log.i("Points", "Added 40 Points");
+//            Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
+//            user.addPoints(40);
+//            dailyRedeemed = true;
+//        }
+//        customButton.setVisibility(View.INVISIBLE);
+//        updateScore();
+//    }
 
     @SuppressLint("MissingPermission")
     @Override
@@ -153,7 +184,12 @@ public class MapsActivity extends FragmentActivity
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
         startLocationUpdates();
-        showQuests(findViewById(R.id.map), false);
+
+
+        if(user.getRole() == 0){
+            showQuests(findViewById(R.id.map), false);
+        }
+        getLeaderboard();
     }
 
     @Override
@@ -240,6 +276,7 @@ public class MapsActivity extends FragmentActivity
                 singleRef.child("Users").child(user.getUsername()).setValue(user);
                 grabData();
                 isInPOI();
+                getLeaderboard();
             }
         };
     }
@@ -378,6 +415,16 @@ public class MapsActivity extends FragmentActivity
                 } else {
                     builder.append(userQuestKey.get(i));
                 }
+//        if (user.getRole() == 0) {
+//            builder.append("Quests Available:\n");
+//        } else {
+//            builder.append("Explorers have bounties in:\n");
+//        }
+//        for (int i = 0; i < userQuestKey.size(); i++) {
+//            if (i != userQuestKey.size()-1) {
+//                builder.append(userQuestKey.get(i) + "\n");
+//            } else {
+//                builder.append(userQuestKey.get(i));
             }
         }
 
@@ -388,6 +435,67 @@ public class MapsActivity extends FragmentActivity
         ppTV.setText(builder.toString());
 
         // Dismiss the popup when touched
+        popView.setOnTouchListener((view1, motionEvent) -> {
+            popup.dismiss();
+            return true;
+        });
+    }
+
+    // Show a leaderboard of the players scores at the current time
+    public void getLeaderboard() {
+        leaderboard = new ArrayList<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getInstance().getReference("Users");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String username = ds.child("username").getValue(String.class);
+                    int score = ds.child("points").getValue(Integer.class);
+                    int role = ds.child("role").getValue(Integer.class);
+                    LeaderboardEntry temp = new LeaderboardEntry(username, score, role);
+                    leaderboard.add(temp);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.i("Leaderboard", "Couldn't get players");
+            }
+        });
+
+    }
+
+    // Show popup of leaderboard
+    @SuppressLint("ClickableViewAccessibility")
+    public void showLeaderboard(ArrayList<LeaderboardEntry> list, View view) {
+        list.sort((Comparator.comparing(LeaderboardEntry::getScore).reversed()));
+        // Inflate the popup window layout
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popView = inflater.inflate(R.layout.pop_up, null);
+
+        // Create pop up window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        final PopupWindow popup = new PopupWindow(popView, width, height, true);
+        popup.setElevation(20);
+
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("Leaderboards: \n");
+        for (int i = 0; i < list.size(); i++) {
+            LeaderboardEntry temp = list.get(i);
+            if (temp.getRole() == 0) {
+                builder.append(temp.getUsername() + " - Explorer: " + temp.getScore() + "\n");
+            } else {
+                builder.append(temp.getUsername() + " - Assassin: " + temp.getScore() + "\n");
+            }
+        }
+
+        ppTV = popup.getContentView().findViewById(R.id.popupTextView);
+        ppTV.setText(builder.toString());
+
         popView.setOnTouchListener((view1, motionEvent) -> {
             popup.dismiss();
             return true;

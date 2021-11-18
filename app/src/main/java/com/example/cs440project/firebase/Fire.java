@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.cs440project.user.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -30,6 +31,7 @@ public class Fire {
     private static final HashMap<String, LatLngBounds> places = new HashMap<>();
     private static final HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
     private static final ArrayList<Marker> markers = new ArrayList<>();
+    private static final ArrayList<User> users = new ArrayList<>();
 
     // Table Ref
     private static final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -37,7 +39,6 @@ public class Fire {
 
     // Init database should only be called if we decide to change the long and lat of an area but not onCreate
     public static void initDatabase() {
-        Log.i(TAG, "Should be done");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Locations");
         try {
@@ -94,39 +95,11 @@ public class Fire {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "Successfully initialized database");
     }
 
     // Takes a username and subtracts points
     public static void killPlayer(String username){
         usersRef.child(username).child("points").setValue(1);
-    }
-
-    public static void initLogsTable(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference logsRef = database.getReference("Logs").child("Config");
-        HashMap<String, String> log = new HashMap<>();
-        log.put("ConnectionString","Bologna");
-        logsRef.setValue(log);
-    }
-
-    // Write a log to the Logs table on firebase. Use this for sending errors.
-    public static void logToDatabase(String logType, String logDescription){
-        // Reference to database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        // Create a unique id string
-        String uuid = UUID.randomUUID().toString();
-
-        // Instantiate a new log object
-        FireLog currentLog = new FireLog(uuid,logType, logDescription);
-
-        // Create a new child in the db using the uuid
-        // Create a new child in the db using the uuid
-        DatabaseReference logsRef = database.getReference("Logs").child(currentLog.getLogType()+"-"+uuid);
-
-        // Write to the db
-        logsRef.setValue(currentLog);
     }
 
     public static HashMap<String, LatLng> getMultiPlayerCoord() {
@@ -144,7 +117,7 @@ public class Fire {
                     Double lon = ds.child("lon").getValue(Double.class);
                     Double lat = ds.child("lat").getValue(Double.class);
                     String username = ds.child("username").getValue(String.class);
-                    Log.i("Players", "Lat: " + lat + " Lon: " + lon);
+
                     LatLng coord = new LatLng(lat, lon);
                     multiPlayerCoord.put(username, coord);
                 }
@@ -165,7 +138,6 @@ public class Fire {
             private void drawMarkers(){
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
                     // Print
-                    Log.d(TAG, entry.getKey() + " : " + entry.getValue());
                     markers.add(mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey())));
                 }
             }
