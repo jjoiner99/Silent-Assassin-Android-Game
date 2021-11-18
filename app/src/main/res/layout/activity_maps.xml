@@ -45,4 +45,14 @@
         android:textOff="Visible"
         android:onClick="onPlayersToggleClick"/>
 
+    <Button
+        android:id="@+id/leaderboard_button"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="10dp"
+        android:text="Leaderboard"
+        android:textSize="10sp"/>
+
 </FrameLayout>

@@ -1,7 +1,5 @@
 package com.example.cs440project.user;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.UUID;
 
 public class User {
@@ -17,13 +15,6 @@ public class User {
         ID = UUID.randomUUID().toString();
         username = ID;
         points = 0;
-    }
-
-    public static User getInstance() {
-        if (instance == null) {
-            instance = new User();
-        }
-        return instance;
     }
 
     public int getPoints() {
