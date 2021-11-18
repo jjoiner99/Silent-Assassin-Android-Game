@@ -5,9 +5,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cs440project.firebase.Fire;
+import com.example.cs440project.user.User;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -83,7 +85,7 @@ public class locationCheck {
             if (b.contains(current)) {
                 Toast.makeText(context, POI, Toast.LENGTH_LONG).show();
                 Log.i("Location Check", POI);
-                checkForOthers((String) place.getKey(), b);
+                checkForOthers(context, (String) place.getKey(), b);
                 return;
             }
         }
@@ -102,19 +104,19 @@ public class locationCheck {
         return "";
     }
 
-    public static void checkForOthers(String place, LatLngBounds b){ //Function to check if other players are in the same POI
-        HashMap<String, LatLng> mult = Fire.getMultiPlayerCoord();
-        //HashMap<String, LatLng> mult = new HashMap<>();
-        //mult.put("player2", new LatLng(41.8719, -87.6479));
-        //Iterator iter = mult.entrySet().iterator();
+    public static void checkForOthers(Activity context, String place, LatLngBounds b){ //Function to check if other players are in the same POI
+        ArrayList<User> users = Fire.getUsers();
 
-        Log.i("Players", "Players: " + mult);
+        Log.i("Players", "Players: " + users);
 
-        for(Map.Entry elem : mult.entrySet()){//Checking each additional player
-            String key = (String)elem.getKey();
-            LatLng val = ((LatLng)elem.getValue());
+        for(User multi : users){
+            String key = multi.getUsername();
+            LatLng val = new LatLng(multi.getLat(), multi.getLon());
             if(b.contains(val)){
-                Log.i("Check", "Another player is in " + place);
+                if(multi.getRole() == 0){
+                    Toast.makeText(context, "You have assassinated " + key + " in " + place, Toast.LENGTH_SHORT).show();
+                    Log.i("Check", "User assassinated " + key + " in " + place);
+                }
             }
         }
 
