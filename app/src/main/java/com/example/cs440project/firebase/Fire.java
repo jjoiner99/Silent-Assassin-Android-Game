@@ -27,6 +27,10 @@ public class Fire {
     private static final HashMap<String, LatLng> multiPlayerCoord = new HashMap<>();
     private static final ArrayList<Marker> markers = new ArrayList<>();
 
+    // Table Ref
+    private static final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private static final DatabaseReference usersRef = database.getReference("Users");
+
     // Init database should only be called if we decide to change the long and lat of an area but not onCreate
     public static void initDatabase() {
         Log.i(TAG, "Should be done");
@@ -89,17 +93,9 @@ public class Fire {
         Log.i(TAG, "Successfully initialized database");
     }
 
-    // TODO - send a users coordinates to firebase on an interval
-    public static void sendUserLocation() {
-    }
-
-    // TODO - check if a users location is inside an interest point boundary
-    public static boolean isUserInPOI() {
-        return false;
-    }
-
-    public static void initQuestTable(){
-
+    // Takes a username and subtracts points
+    public static void killPlayer(String username){
+        usersRef.child(username).child("points").setValue(1);
     }
 
     public static void initLogsTable(){
@@ -135,12 +131,7 @@ public class Fire {
 
     public static ArrayList<Marker> getMarkers() {return markers; }
 
-
-    // TODO - fetch other players coodinates
     public static void fetchMultiPlayLocation(GoogleMap mMap) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Users");
-
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -187,6 +178,6 @@ public class Fire {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             }
         };
-        myRef.addValueEventListener(postListener);
+        usersRef.addValueEventListener(postListener);
     }
 }

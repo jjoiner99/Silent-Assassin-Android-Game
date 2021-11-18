@@ -58,6 +58,7 @@ public class MapsActivity extends FragmentActivity
     private double lat;
     private double lon;
     private User user = new User();
+    ArrayList<String> playersInSameLoc;
     private Button customButton; //todo rename customButton
     private Button killExplorerButton;
     int loc;
@@ -65,7 +66,7 @@ public class MapsActivity extends FragmentActivity
     boolean visible = false;
     boolean dailyRedeemed = false;
     private TextView ppTV; // Popup TextView
-
+    private String playerKilled;
 
     ArrayList<Integer> userQuestId = new ArrayList<Integer>();
     ArrayList<String> userQuestKey = new ArrayList<String>();
@@ -123,6 +124,14 @@ public class MapsActivity extends FragmentActivity
         killExplorerButton = findViewById(R.id.killExplorerButton);
         killExplorerButton.setVisibility(View.INVISIBLE);
         killExplorerButton.setOnClickListener(v -> {
+            //pick a random player in the list
+            playerKilled = playersInSameLoc.get((int)(Math.random() * playersInSameLoc.size()));
+
+            Log.i(TAG, "Player To Die!!: "+ playerKilled);
+            Fire.killPlayer(playerKilled);
+            showQuests(findViewById(R.id.map), true);
+            user.addPoints(50);
+
             // todo set visibility when in POI & there are other explorers & current user is a hunter
                 killExplorerButton.setVisibility(v.INVISIBLE);
         });
@@ -142,7 +151,7 @@ public class MapsActivity extends FragmentActivity
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
         startLocationUpdates();
-        showQuests(findViewById(R.id.map));
+        showQuests(findViewById(R.id.map), false);
     }
 
     @Override
@@ -195,7 +204,7 @@ public class MapsActivity extends FragmentActivity
             currentLocationText.setVisibility(View.VISIBLE);
 
             // list of other players in samlocation
-            ArrayList<String> playersInSameLoc = locationCheck.checkForOthers(checkLocationResult, user.getUsername());
+            playersInSameLoc = locationCheck.checkForOthers(checkLocationResult, user.getUsername());
 
             // user is a hunter
             if(role == 1 && playersInSameLoc.size() > 0){
@@ -339,7 +348,7 @@ public class MapsActivity extends FragmentActivity
     }
 
     // Function to show the list of quests an explorer can go to
-    public void showQuests(View view) {
+    public void showQuests(View view, boolean hunterKill) {
         // Inflate the popup window layout
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View popView = inflater.inflate(R.layout.pop_up, null);
@@ -350,17 +359,22 @@ public class MapsActivity extends FragmentActivity
         final PopupWindow popup = new PopupWindow(popView, width, height, true);
         popup.setElevation(20);
 
-        generateRandomQuests(4);
         StringBuilder builder = new StringBuilder();
-        builder.append("Quests Available:\n");
-        for (int i = 0; i < userQuestKey.size(); i++) {
-            if (i != userQuestKey.size()-1) {
-                builder.append(userQuestKey.get(i) + "\n");
-            } else {
-                builder.append(userQuestKey.get(i));
+        // Display a hunter kill dialog box
+        if(hunterKill == true){
+            builder.append(playerKilled + " was killed");
+        }
+        else {
+            generateRandomQuests(4);
+            builder.append("Quests Available:\n");
+            for (int i = 0; i < userQuestKey.size(); i++) {
+                if (i != userQuestKey.size() - 1) {
+                    builder.append(userQuestKey.get(i) + "\n");
+                } else {
+                    builder.append(userQuestKey.get(i));
+                }
             }
         }
-        Log.i("quests", builder.toString());
 
         // Show popup
         popup.showAtLocation(view, Gravity.CENTER, 0, 0);
