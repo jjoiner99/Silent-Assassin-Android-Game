@@ -175,6 +175,7 @@ public class MapsActivity extends FragmentActivity
         googleMap.setOnMyLocationClickListener(this);
         startLocationUpdates();
         showQuests(findViewById(R.id.map));
+        getLeaderboard();
     }
 
     @Override
