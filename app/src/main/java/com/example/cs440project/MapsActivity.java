@@ -125,7 +125,6 @@ public class MapsActivity extends FragmentActivity
         killExplorerButton.setOnClickListener(v -> {
             // todo set visibility when in POI & there are other explorers & current user is a hunter
                 killExplorerButton.setVisibility(v.INVISIBLE);
-
         });
 
     }
@@ -186,7 +185,7 @@ public class MapsActivity extends FragmentActivity
     }
 
     public boolean isInPOI(){
-        
+
         String checkLocationResult = locationCheck.check(this, lat,lon);
         int role = user.getRole();
 
@@ -195,9 +194,14 @@ public class MapsActivity extends FragmentActivity
             currentLocationText.setText("Welcome to "+checkLocationResult);
             currentLocationText.setVisibility(View.VISIBLE);
 
+            // list of other players in samlocation
+            ArrayList<String> playersInSameLoc = locationCheck.checkForOthers(checkLocationResult, user.getUsername());
+
             // user is a hunter
-            if(role == 1){
+            if(role == 1 && playersInSameLoc.size() > 0){
                 killExplorerButton.setVisibility(View.VISIBLE);
+            } else {
+                killExplorerButton.setVisibility(View.INVISIBLE);
             }
             return true;
         }

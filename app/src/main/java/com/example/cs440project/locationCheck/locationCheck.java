@@ -8,6 +8,7 @@ import com.example.cs440project.firebase.Fire;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,10 +82,10 @@ public class locationCheck {
         for (Map.Entry place : getMap().entrySet()) {
             String POI =(String) place.getKey();
             LatLngBounds b = (LatLngBounds)  place.getValue();
-            Log.i(TAG, "Latitude: " + current.latitude + " Longitude: " + current.longitude);
+//            Log.i(TAG, "Latitude: " + current.latitude + " Longitude: " + current.longitude);
             if (b.contains(current)) {
                 Log.i(TAG, POI);
-                // checkForOthers((String) place.getKey(), b); //todo this isn't working
+                // checkForOthers((String) place.getKey(), b);
                 return POI;
             }
         }
@@ -104,31 +105,23 @@ public class locationCheck {
     }
 
     // Return a hashmap of other players
-    public static void checkForOthers(String place, LatLngBounds b){ //Function to check if other players are in the same POI
+    public static ArrayList<String> checkForOthers(String currentUserLocation, String currentUsername){ //Function to check if other players are in the same POI
+        // Map of other user coords
         HashMap<String, LatLng> mult = Fire.getMultiPlayerCoord();
-        //HashMap<String, LatLng> mult = new HashMap<>();
-        //mult.put("player2", new LatLng(41.8719, -87.6479));
-        //Iterator iter = mult.entrySet().iterator();
+        ArrayList<String> playersInTheSame = new ArrayList<String>();
 
-        Log.i("Check", "Players: " + mult);
+        // Loop through all players location
+        for(Map.Entry elem : mult.entrySet()){
+            String otherUsername = (String)elem.getKey();
+            LatLng cord = ((LatLng)elem.getValue());
+            String otherUserLocation = locationCheck.checkLocation(cord.latitude, cord.longitude);
 
-        for(Map.Entry elem : mult.entrySet()){//Checking each additional player
-            String key = (String)elem.getKey();
-            LatLng val = ((LatLng)elem.getValue());
-            if(b.contains(val)){
-                Log.i("Check", "Another player is in " + place);
+            // Check if they are in current Location & dont have the same username
+            if(otherUserLocation.equals(currentUserLocation) && !(otherUsername.equals(currentUsername))){
+                Log.i(TAG, otherUsername+" is in the same poi ");
+                playersInTheSame.add(otherUsername);
             }
         }
-
-        /*while(iter.hasNext()){
-            Map.Entry mapElem = (Map.Entry)iter.next();
-            LatLng point = new LatLng(47.8719, -87.6479);
-            if(b.contains(point)){
-                Log.i("Check", "Another player is in " + place);
-            }
-            else{
-                Log.i("Check", "Not in " + place);
-            }
-        }*/
+        return playersInTheSame;
     }
 }
