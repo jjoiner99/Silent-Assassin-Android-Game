@@ -71,6 +71,7 @@ public class MapsActivity extends FragmentActivity
     String DailyBounty;
     boolean visible = false;
     boolean dailyRedeemed = false;
+    boolean playerKilled = false;
     private TextView ppTV; // Popup TextView
     private Button leaderboardButton;
     private ArrayList<LeaderboardEntry> leaderboard;
@@ -152,6 +153,27 @@ public class MapsActivity extends FragmentActivity
         }
         customButton.setVisibility(View.INVISIBLE);
         updateScore();
+    }
+
+    // Handler for when User is Assassinated, called inside the Kill Button
+    public void playerKilledHandler(){
+
+        if(playerKilled == true){
+            resetLeaderBoard();
+            System.out.println("Player has been killed, his score has been reset to 0");
+        }
+        else{
+            System.out.println("Player Still Alive");
+        }
+        
+    }
+
+    // Resets Leaderboard for User
+    public void resetLeaderBoard(){
+
+            user.setPoints(0);
+            updateScore();
+
     }
 
     @SuppressLint("MissingPermission")
