@@ -75,6 +75,9 @@ public class MapsActivity extends FragmentActivity
     boolean visible = false;
     boolean dailyRedeemed = false;
     private TextView ppTV; // Popup TextView
+    private Button leaderboardButton;
+    private ArrayList<LeaderboardEntry> leaderboard;
+
 
 
     ArrayList<Integer> userQuestId = new ArrayList<Integer>();
