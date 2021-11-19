@@ -1,7 +1,6 @@
 package com.example.cs440project;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -46,8 +45,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity
@@ -177,7 +174,7 @@ public class MapsActivity extends FragmentActivity
         MapPreference.setMapStyle(googleMap, MapsActivity.this); // Set blue style to mMap
         InterestPoints.drawBuildingPolygons(googleMap); // Draws all of the buildings
         InterestPoints.drawUicBounds(googleMap); // Draws stroke around uic block
-        Fire.fetchMultiPlayLocation(googleMap, user.getRole());
+        Fire.fetchMultiPlayLocation(googleMap, user.getRole(), MapsActivity.this);
         // When map finished loading, prevents the error
         googleMap.setOnMapLoadedCallback(MapPreference.setCamera(googleMap));
         googleMap.setMyLocationEnabled(true);
