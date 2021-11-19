@@ -2,18 +2,21 @@
 
 package com.example.cs440project.firebase;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-
+import androidx.core.content.ContextCompat;
+import com.example.cs440project.R;
 import com.example.cs440project.user.User;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class Fire {
     //Logcat TAG
@@ -108,7 +110,7 @@ public class Fire {
 
     public static ArrayList<Marker> getMarkers() {return markers; }
 
-    public static void fetchMultiPlayLocation(GoogleMap mMap, int isHunter) {
+    public static void fetchMultiPlayLocation(GoogleMap mMap, int isHunter, Context mContext) {
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -125,20 +127,34 @@ public class Fire {
                 if(isHunter != 1) {
                     // First render
                     if (markers.isEmpty()) {
-                        drawMarkers();
+                        drawMarkers(mContext);
                     } else {
                         // Update positions of players as they move
                         deleteMarkers();
-                        drawMarkers();
+                        drawMarkers(mContext);
                     }
                 }
             }
 
+            private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+                Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+                vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+                Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                vectorDrawable.draw(canvas);
+                return BitmapDescriptorFactory.fromBitmap(bitmap);
+            }
+
             // Draws marker for each player
-            private void drawMarkers(){
+            private void drawMarkers(Context mContext){
                 for (Map.Entry<String, LatLng> entry : multiPlayerCoord.entrySet()) {
+//                    Marker marker = mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey()).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_background)));
                     // Print
-                    markers.add(mMap.addMarker(new MarkerOptions().position(entry.getValue()).title(entry.getKey())));
+
+                    markers.add(mMap.addMarker(new MarkerOptions()
+                            .position(entry.getValue())
+                            .icon(bitmapDescriptorFromVector(mContext, R.drawable.user))
+                            .title(entry.getKey())));
                 }
             }
 

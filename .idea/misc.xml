@@ -11,10 +11,14 @@
         <entry key="..\:/Users/jamie/Desktop/Silent Assassin/CS-440-Group-Project/app/src/main/res/layout/activity_maps.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/jamie/Desktop/Silent Assassin/CS-440-Group-Project/app/src/main/res/layout/pop_up.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/jamie/Desktop/Silent Assassin/CS-440-Group-Project/app/src/main/res/layout/role_screen.xml" value="0.36666666666666664" />
+        <entry key="app/src/main/res/drawable/ic_person.xml" value="0.1605" />
+        <entry key="app/src/main/res/drawable/ic_person_background.xml" value="0.2055" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.18355407714843752" />
         <entry key="app/src/main/res/layout/pop_up.xml" value="0.2328125" />
         <entry key="app/src/main/res/layout/role_screen.xml" value="0.2328125" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_person.xml" value="0.2055" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_person_round.xml" value="0.2055" />
       </map>
     </option>
   </component>
