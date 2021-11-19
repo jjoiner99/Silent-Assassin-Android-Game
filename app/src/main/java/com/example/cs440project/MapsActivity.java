@@ -19,6 +19,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.cs440project.callback.MyCallback;
 import com.example.cs440project.databinding.ActivityMapsBinding;
 import com.example.cs440project.firebase.Fire;
 import com.example.cs440project.interestPoints.InterestPoints;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 
 import java.util.Comparator;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -84,8 +86,9 @@ public class MapsActivity extends FragmentActivity
         user.setUsername(i.getStringExtra("username"));
         user.setRole(i.getIntExtra("role", 0));
 
-        getDailyBounty();
         // Retrieve the latest bounty
+        getDailyBounty(value -> DailyBounty = value);
+
         super.onCreate(savedInstanceState);
 
         com.example.cs440project.databinding.ActivityMapsBinding binding = ActivityMapsBinding.inflate(getLayoutInflater());
@@ -149,25 +152,6 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-
-//    public void collectBounty() {
-//        String curLoc = locationCheck.checkLocation(lat, lon);
-//        // If we are in a user quest
-//        if(userQuestKey.contains(curLoc)){
-//            // Remove daily quest from the list
-//            userQuestKey.remove(curLoc);
-//            Toast.makeText(MapsActivity.this, "You just got +10 points!", Toast.LENGTH_SHORT).show();
-//            user.addPoints(10);
-//        } else{
-//            Log.i("Points", "Added 40 Points");
-//            Toast.makeText(MapsActivity.this, "You just got +40 points!", Toast.LENGTH_SHORT).show();
-//            user.addPoints(40);
-//            dailyRedeemed = true;
-//        }
-//        customButton.setVisibility(View.INVISIBLE);
-//        updateScore();
-//    }
-
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -182,10 +166,6 @@ public class MapsActivity extends FragmentActivity
         googleMap.setOnMyLocationClickListener(this);
         startLocationUpdates();
 
-
-        if(user.getRole() == 0){
-            showQuests(findViewById(R.id.map), false);
-        }
         getLeaderboard();
     }
 
@@ -238,7 +218,7 @@ public class MapsActivity extends FragmentActivity
             currentLocationText.setText("Welcome to "+checkLocationResult);
             currentLocationText.setVisibility(View.VISIBLE);
 
-            // list of other players in samlocation
+            // list of other players in same location
             playersInSameLoc = locationCheck.checkForOthers(checkLocationResult, user.getUsername());
 
             // user is a hunter
@@ -338,14 +318,20 @@ public class MapsActivity extends FragmentActivity
     }
 
     // Set Daily Bounty to fetched firebase data
-    public void getDailyBounty() {
+    public void getDailyBounty(MyCallback myCallback) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Loc = the id of daily location
                 loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
-                DailyBounty = getDailyLocation(loc);
+                String DailyBounty = getDailyLocation(loc);
+                myCallback.onCallback(DailyBounty);
+                if(user.getRole() == 0){
+                    showQuests(findViewById(R.id.map), false);
+                } else {
+                    showQuests(findViewById(R.id.map), false);
+                }
                 Log.i("DailyQuest", "Daily Bounty = " + DailyBounty);
             }
 
@@ -365,7 +351,7 @@ public class MapsActivity extends FragmentActivity
             case 3:
                 return "CirclePark";
             case 4:
-                return"Library";
+                return "Library";
             case 5:
                 return "Quad";
             case 6:
@@ -405,25 +391,22 @@ public class MapsActivity extends FragmentActivity
         // Display Quest dialog box
         else {
             generateRandomQuests(4);
-            builder.append("Quests Available:\n");
+            if (user.getRole() == 0) {
+                builder.append("Quests Available:\n");
+            } else {
+                builder.append("Explorers have bounties in:\n");
+            }
             for (int i = 0; i < userQuestKey.size(); i++) {
                 if (i != userQuestKey.size() - 1) {
                     builder.append(userQuestKey.get(i) + "\n");
                 } else {
                     builder.append(userQuestKey.get(i));
                 }
-//        if (user.getRole() == 0) {
-//            builder.append("Quests Available:\n");
-//        } else {
-//            builder.append("Explorers have bounties in:\n");
-//        }
-//        for (int i = 0; i < userQuestKey.size(); i++) {
-//            if (i != userQuestKey.size()-1) {
-//                builder.append(userQuestKey.get(i) + "\n");
-//            } else {
-//                builder.append(userQuestKey.get(i));
             }
         }
+
+        builder.append("\n\nDaily bounty: \n");
+        builder.append(DailyBounty);
 
         // Show popup
         popup.showAtLocation(view, Gravity.CENTER, 0, 0);

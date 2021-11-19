@@ -22,7 +22,7 @@ import java.util.Objects;
 public class RoleActivity extends AppCompatActivity {
 
     Button b1, b2;
-    EditText ed1,ed2;
+    EditText ed1, ed2;
     TextView tx1;
     int counter = 3;
     private String username;
