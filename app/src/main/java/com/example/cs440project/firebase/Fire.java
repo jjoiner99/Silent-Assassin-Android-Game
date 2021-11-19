@@ -101,7 +101,7 @@ public class Fire {
 
     // Takes a username and subtracts points
     public static void killPlayer(String username){
-        usersRef.child(username).child("points").setValue(1);
+        usersRef.child(username).child("points").setValue(0);
     }
 
     public static HashMap<String, LatLng> getMultiPlayerCoord() {

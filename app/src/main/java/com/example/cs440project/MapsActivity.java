@@ -19,7 +19,6 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.cs440project.callback.MyCallback;
 import com.example.cs440project.databinding.ActivityMapsBinding;
 import com.example.cs440project.firebase.Fire;
 import com.example.cs440project.interestPoints.InterestPoints;
@@ -35,7 +34,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,10 +42,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
 import java.util.Comparator;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -87,7 +83,7 @@ public class MapsActivity extends FragmentActivity
         user.setRole(i.getIntExtra("role", 0));
 
         // Retrieve the latest bounty
-        getDailyBounty(value -> DailyBounty = value);
+        getDailyBounty();
 
         super.onCreate(savedInstanceState);
 
@@ -318,15 +314,14 @@ public class MapsActivity extends FragmentActivity
     }
 
     // Set Daily Bounty to fetched firebase data
-    public void getDailyBounty(MyCallback myCallback) {
+    public void getDailyBounty() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("DailyQuestPOI");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Loc = the id of daily location
                 loc = dataSnapshot.child("interestPointId").getValue(Integer.class);
-                String DailyBounty = getDailyLocation(loc);
-                myCallback.onCallback(DailyBounty);
+                DailyBounty = getDailyLocation(loc);
                 if(user.getRole() == 0){
                     showQuests(findViewById(R.id.map), false);
                 } else {
@@ -403,10 +398,9 @@ public class MapsActivity extends FragmentActivity
                     builder.append(userQuestKey.get(i));
                 }
             }
+            builder.append("\n\nDaily bounty: \n");
+            builder.append(DailyBounty);
         }
-
-        builder.append("\n\nDaily bounty: \n");
-        builder.append(DailyBounty);
 
         // Show popup
         popup.showAtLocation(view, Gravity.CENTER, 0, 0);
