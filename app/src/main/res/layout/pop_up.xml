@@ -17,6 +17,6 @@
         android:text="POPUP"
         android:elevation="10dp"
         android:textColor="@color/white"
-        android:textSize="24dp" />
+        android:textSize="16dp" />
 
 </RelativeLayout>
