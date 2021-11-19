@@ -153,7 +153,7 @@ public class Fire {
 
                     markers.add(mMap.addMarker(new MarkerOptions()
                             .position(entry.getValue())
-                            .icon(bitmapDescriptorFromVector(mContext, R.drawable.user))
+                            .icon(bitmapDescriptorFromVector(mContext, R.drawable.person2))
                             .title(entry.getKey())));
                 }
             }

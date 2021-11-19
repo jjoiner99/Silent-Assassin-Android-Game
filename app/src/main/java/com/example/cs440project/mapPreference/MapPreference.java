@@ -15,7 +15,7 @@ public class MapPreference {
     public static GoogleMap.OnMapLoadedCallback setCamera(GoogleMap mMap){
         mMap.setLatLngBoundsForCameraTarget(InterestPoints.uicBounds);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(InterestPoints.uicCenter));
-        mMap.setMinZoomPreference(17.0f);
+        mMap.setMinZoomPreference(16.5f);
         mMap.setMaxZoomPreference(18.0f);
         return null;
     }
